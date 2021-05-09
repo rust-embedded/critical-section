@@ -3,7 +3,15 @@ name = "critical-section"
 version = "0.1.0"
 authors = ["Dario Nieuwenhuis <dirbaio@dirbaio.net>"]
 edition = "2018"
+description = "Critical section abstraction"
 repository = "https://github.com/embassy-rs/critical-section"
+readme = "README.md"
+license = "MIT OR Apache-2.0"
+categories = [
+    "embedded",
+    "no-std",
+    "concurrency",
+]
 
 [features]
 custom-impl = []
