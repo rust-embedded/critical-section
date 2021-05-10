@@ -23,10 +23,10 @@ pub unsafe fn release(token: u8) {
 
 /// Execute closure `f` in a critical section.
 #[inline]
-pub fn with<R>(f: impl FnOnce(&CriticalSection) -> R) -> R {
+pub fn with<R>(f: impl FnOnce(CriticalSection) -> R) -> R {
     unsafe {
         let token = acquire();
-        let r = f(&CriticalSection::new());
+        let r = f(CriticalSection::new());
         release(token);
         r
     }
