@@ -1,4 +1,4 @@
-# atomic-pool
+# critical-section
 
 [![Documentation](https://docs.rs/critical-section/badge.svg)](https://docs.rs/critical-section)
 
