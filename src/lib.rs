@@ -92,6 +92,29 @@ cfg_if::cfg_if! {
                 cortex_m::interrupt::enable()
             }
         }
+    } else if #[cfg(feature = "std")] {
+        extern crate std;
+        static INIT: std::sync::Once = std::sync::Once::new();
+        static mut GLOBAL_LOCK: Option<std::sync::Mutex<()>> = None;
+        static mut GLOBAL_GUARD: Option<std::sync::MutexGuard<'static, ()>> = None;
+
+        #[no_mangle]
+        unsafe fn _critical_section_acquire() -> u8 {
+            INIT.call_once(|| unsafe {
+                GLOBAL_LOCK.replace(std::sync::Mutex::new(()));
+            });
+
+            let guard = GLOBAL_LOCK.as_ref().unwrap().lock().unwrap();
+            GLOBAL_GUARD.replace(guard);
+            1
+        }
+
+        #[no_mangle]
+        unsafe fn _critical_section_release(token: u8) {
+            if token == 1 {
+                GLOBAL_GUARD.take();
+            }
+        }
     } else {
         compile_error!("Critical section is not implemented for this target. Make sure you've specified the correct --target. You may need to supply a custom critical section implementation with the `custom-impl` feature");
     }
