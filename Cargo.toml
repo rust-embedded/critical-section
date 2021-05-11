@@ -15,7 +15,6 @@ categories = [
 
 [features]
 custom-impl = []
-std = []
 
 [dependencies]
 bare-metal = "1.0.0"

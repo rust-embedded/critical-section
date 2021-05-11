@@ -92,7 +92,7 @@ cfg_if::cfg_if! {
                 cortex_m::interrupt::enable()
             }
         }
-    } else if #[cfg(feature = "std")] {
+    } else if #[cfg(any(unix, windows))] {
         extern crate std;
         static INIT: std::sync::Once = std::sync::Once::new();
         static mut GLOBAL_LOCK: Option<std::sync::Mutex<()>> = None;
