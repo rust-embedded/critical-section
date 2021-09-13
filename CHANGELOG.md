@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 No unreleased changes yet
 
+## 0.2.1 - 2021-09-13
+
+- Added support for `wasm` targets.
+
 ## 0.2.1 - 2021-05-11
 
 - Added critical section implementation for `std`, based on a global Mutex.
