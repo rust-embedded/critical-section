@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 No unreleased changes yet
 
+## 0.2.4 - 2021-09-24
+
+- Add support for 32bit RISC-V targets.
+
 ## 0.2.3 - 2021-09-13
 
 - Use correct `#[cfg]` for `wasm` targets.
