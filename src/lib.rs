@@ -92,6 +92,20 @@ cfg_if::cfg_if! {
                 cortex_m::interrupt::enable()
             }
         }
+    } else if #[cfg(target_arch = "riscv32")] {
+        #[no_mangle]
+        unsafe fn _critical_section_acquire() -> u8 {
+            let interrupts_active = riscv::register::mstatus::read().mie();
+            riscv::interrupt::disable();
+            interrupts_active as _
+        }
+
+        #[no_mangle]
+        unsafe fn _critical_section_release(token: u8) {
+            if token != 0 {
+                riscv::interrupt::enable();
+            }
+        }
     } else if #[cfg(any(unix, windows, wasm, target_arch = "wasm32"))] {
         extern crate std;
         static INIT: std::sync::Once = std::sync::Once::new();

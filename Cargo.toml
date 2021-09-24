@@ -34,3 +34,6 @@ cortex-m = "0.7.2"
 cortex-m = "0.7.2"
 [target."thumbv8m.main-none-eabihf".dependencies]
 cortex-m = "0.7.2"
+
+[target.'cfg(target_arch = "riscv32")'.dependencies]
+riscv = {version = "0.7.0"}
