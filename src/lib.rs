@@ -1,4 +1,5 @@
 #![no_std]
+#![feature(llvm_asm)]
 
 pub use bare_metal::CriticalSection;
 
@@ -90,6 +91,25 @@ cfg_if::cfg_if! {
         unsafe fn _critical_section_release(token: u8) {
             if token != 0 {
                 cortex_m::interrupt::enable()
+            }
+        }
+    } else if #[cfg(target_arch = "avr")] {
+        #[no_mangle]
+        unsafe fn _critical_section_acquire() -> u8 {
+            let mut sreg: u8;
+            llvm_asm!(
+                "in $0, 0x3F
+                 cli"
+                : "=r"(sreg)
+                ::: "volatile"
+            );
+            sreg
+        }
+
+        #[no_mangle]
+        unsafe fn _critical_section_release(token: u8) {
+            if token & 0x80 == 0x80 {
+                llvm_asm!("sei" :::: "volatile");
             }
         }
     } else if #[cfg(target_arch = "riscv32")] {
