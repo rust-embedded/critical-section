@@ -109,13 +109,13 @@ cfg_if::cfg_if! {
     } else if #[cfg(any(unix, windows, wasm, target_arch = "wasm32"))] {
         extern crate std;
         use std::sync::{Once, Mutex, MutexGuard};
-        use core::cell::RefCell;
+        use core::cell::Cell;
 
         static INIT: Once = Once::new();
         static mut GLOBAL_LOCK: Option<Mutex<()>> = None;
         static mut GLOBAL_GUARD: Option<MutexGuard<'static, ()>> = None;
 
-        std::thread_local!(static IS_LOCKED: RefCell<bool> = RefCell::new(false));
+        std::thread_local!(static IS_LOCKED: Cell<bool> = Cell::new(false));
 
         #[no_mangle]
         unsafe fn _critical_section_acquire() -> u8 {
@@ -125,10 +125,10 @@ cfg_if::cfg_if! {
 
             // Allow reentrancy by checking thread local state
             IS_LOCKED.with(|l| {
-                if !*l.borrow() {
+                if !l.get() {
                     let guard = GLOBAL_LOCK.as_ref().unwrap().lock().unwrap();
                     GLOBAL_GUARD.replace(guard);
-                    *l.borrow_mut() = true;
+                    l.set(true);
                 }
             });
             1
@@ -139,7 +139,7 @@ cfg_if::cfg_if! {
             if token == 1 {
                 GLOBAL_GUARD.take();
                 IS_LOCKED.with(|l| {
-                    *l.borrow_mut() = false;
+                    l.set(false);
                 });
             }
         }
