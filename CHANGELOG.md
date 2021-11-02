@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 No unreleased changes yet
 
+## 0.2.5 - 2021-11-02
+
+- Fix `std` implementation to allow reentrant (nested) critical sections. This would previously deadlock.
+
 ## 0.2.4 - 2021-09-24
 
 - Add support for 32bit RISC-V targets.
