@@ -129,9 +129,11 @@ cfg_if::cfg_if! {
                     let guard = GLOBAL_LOCK.as_ref().unwrap().lock().unwrap();
                     GLOBAL_GUARD.replace(guard);
                     l.set(true);
+                    1
+                } else {
+                    0
                 }
-            });
-            1
+            })
         }
 
         #[no_mangle]
