@@ -1,3 +1,4 @@
+#![cfg_attr(docsrs, feature(doc_cfg))]
 #![no_std]
 
 pub use bare_metal::CriticalSection;
@@ -39,6 +40,7 @@ cfg_if::cfg_if! {
         /// This trait is not intended to be used except when implementing a custom critical section.
         ///
         /// Implementations must uphold the contract specified in [`crate::acquire`] and [`crate::release`].
+        #[cfg_attr(docsrs, doc(cfg(feature = "custom-impl")))]
         pub unsafe trait Impl {
             /// Acquire the critical section.
             unsafe fn acquire() -> u8;
@@ -65,6 +67,7 @@ cfg_if::cfg_if! {
         ///     }
         /// }
         ///
+        #[cfg_attr(docsrs, doc(cfg(feature = "custom-impl")))]
         #[macro_export]
         macro_rules! custom_impl {
             ($t: ty) => {
