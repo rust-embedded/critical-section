@@ -37,3 +37,7 @@ cortex-m = "0.7.2"
 
 [target.'cfg(target_arch = "riscv32")'.dependencies]
 riscv = {version = "0.7.0"}
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
