@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 No unreleased changes yet
 
+## 0.2.6 - 2022-04-02
+
+- Improved docs.
+
 ## 0.2.5 - 2021-11-02
 
 - Fix `std` implementation to allow reentrant (nested) critical sections. This would previously deadlock.
