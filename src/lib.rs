@@ -1,9 +1,23 @@
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![no_std]
+#![doc = include_str!("../README.md")]
 
 pub use bare_metal::CriticalSection;
 
-/// Acquire the critical section.
+/// Acquire a critical section in the current thread.
+///
+/// This function is extremely low level. Strongly prefer using [`with`] instead.
+///
+/// Nesting critical sections is allowed. The inner critical sections
+/// are mostly no-ops since they're already protected by the outer one.
+///
+/// # Safety
+///
+/// - Each `acquire` call must be paired with exactly one `release` call in the same thread.
+/// - `acquire` returns a "restore token" `u8` that you must pass to the corresponding `release` call, and treat opaquely otherwise.
+/// - `acquire`/`release` pairs must be "properly nested", ie it's not OK to do `a=acquire(); b=acquire(); release(a); release(b);`.
+/// - It is UB to call `release` if the critical section is not acquired in the current thread.
+/// - It is UB to call `release` with a restore token that does not come from the corresponding `acquire` call.
 #[inline]
 pub unsafe fn acquire() -> u8 {
     extern "Rust" {
@@ -14,6 +28,12 @@ pub unsafe fn acquire() -> u8 {
 }
 
 /// Release the critical section.
+///
+/// This function is extremely low level. Strongly prefer using [`with`] instead.
+///
+/// # Safety
+///
+/// See [`acquire`] for the safety contract description.
 #[inline]
 pub unsafe fn release(token: u8) {
     extern "Rust" {
@@ -23,6 +43,9 @@ pub unsafe fn release(token: u8) {
 }
 
 /// Execute closure `f` in a critical section.
+///
+/// Nesting critical sections is allowed. The inner critical sections
+/// are mostly no-ops since they're already protected by the outer one.
 #[inline]
 pub fn with<R>(f: impl FnOnce(CriticalSection) -> R) -> R {
     unsafe {
