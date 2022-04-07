@@ -2,8 +2,7 @@
 
 set -euxo pipefail
 
-rustup install nightly-2021-01-07
-rustup component add rust-src
+rustup install nightly-2021-01-07 --component rust-src
 cargo +nightly-2021-01-07 build -Zbuild-std=core --target avr-specs/avr-atmega328p.json
 
 cargo build
