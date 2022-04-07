@@ -17,14 +17,3 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build
         run: ./ci.sh
-
-      - uses: actions/checkout@v2
-      - name: Build for AVR with old toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly-2021-01-07
-          components : rust-src
-          target: avr-specs/avr-atmega328p.json
-          profile : minimal
-          command : build
-          args: -- -Zbuild-std=core
