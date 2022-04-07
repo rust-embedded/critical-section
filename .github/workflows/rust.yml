@@ -27,4 +27,4 @@ jobs:
           target: avr-specs/avr-atmega328p.json
           profile : minimal
           command : build
-          args: -Zbuild-std=core
+          args: -- -Zbuild-std=core
