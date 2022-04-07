@@ -8,4 +8,5 @@ targets = [
     "thumbv7em-none-eabi",
     "riscv32imc-unknown-none-elf",
     "riscv32imac-unknown-none-elf",
+    "avr-specs/avr-atmpeg328p.json",
 ]

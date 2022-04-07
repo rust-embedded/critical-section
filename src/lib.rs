@@ -1,7 +1,7 @@
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![no_std]
-#![feature(llvm_asm)]
-#![doc = include_str!("../README.md")]
+#![cfg_attr(target_arch = "avr", feature(llvm_asm))]
+//#![doc = include_str!("../README.md")]
 
 pub use bare_metal::CriticalSection;
 
