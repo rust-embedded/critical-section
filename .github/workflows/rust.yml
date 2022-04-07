@@ -24,5 +24,7 @@ jobs:
         with:
           toolchain: nightly-2021-01-07
           components : rust-src
+          target: avr-specs/avr-atmega328p.json
           profile : minimal
-        run: ./ci2.sh
+          command : build
+          args: -Zbuild-std=core
