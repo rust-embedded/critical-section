@@ -17,3 +17,12 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build
         run: ./ci.sh
+
+      - uses: actions/checkout@v2
+      - name: Build for AVR with old toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly-2021-01-07
+          components : rust-src
+          profile : minimal
+        run: ./ci2.sh
