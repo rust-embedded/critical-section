@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 No unreleased changes yet
 
+## 0.2.7 - 2022-04-08
+
+- Add support for AVR targets.
+
 ## 0.2.6 - 2022-04-02
 
 - Improved docs.
