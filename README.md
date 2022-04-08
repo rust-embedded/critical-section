@@ -63,13 +63,13 @@ If you're writing a library crate that provides a custom impl, it is strongly re
 you only provide it if explicitly enabled by the user via a Cargo feature `critical-section-impl`.
 This allows the user to opt out from your impl to supply their own. 
 
-## WHy not generics?
+## Why not generics?
 
 An alternative solution would be to use a `CriticalSection` trait, and make all
 code that needs acquiring the critical section generic over it. This has a few problems:
 
 - It would require passing it as a generic param to a very big amount of code, which
-would be quite  unergonomic.b
+would be quite unergonomic.
 - It's common to put `Mutex`es in `static` variables, and `static`s can't 
 be generic.
 - The user can mix different critical section implementations in the same program,
