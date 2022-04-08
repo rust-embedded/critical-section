@@ -36,6 +36,7 @@ This crate solves the problem by providing this missing universal API.
 |--------------------|---------------------------|-------------------|
 | thumbv[6-8]        | `cpsid` / `cpsie`.        | Only sound in single-core privileged mode. |
 | riscv32*           | set/clear `mstatus.mie`   | Only sound in single-core privileged mode. |
+| avr*               | `cli` / `sei`             | Only sound in single-core (does multicore AVR even exist?) |
 | std targets        | Global `std::sync::Mutex` |  |
 
 ## Providing a custom impl
