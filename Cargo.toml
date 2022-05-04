@@ -20,21 +20,6 @@ custom-impl = []
 bare-metal = "1.0.0"
 cfg-if = "1.0.0"
 
-[target.thumbv6m-none-eabi.dependencies]
-cortex-m = "0.7.2"
-[target.thumbv7em-none-eabi.dependencies]
-cortex-m = "0.7.2"
-[target.thumbv7em-none-eabihf.dependencies]
-cortex-m = "0.7.2"
-[target.thumbv7m-none-eabi.dependencies]
-cortex-m = "0.7.2"
-[target."thumbv8m.base-none-eabi".dependencies]
-cortex-m = "0.7.2"
-[target."thumbv8m.main-none-eabi".dependencies]
-cortex-m = "0.7.2"
-[target."thumbv8m.main-none-eabihf".dependencies]
-cortex-m = "0.7.2"
-
 [target.'cfg(target_arch = "riscv32")'.dependencies]
 riscv = {version = "0.7.0"}
 

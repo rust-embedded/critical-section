@@ -107,19 +107,7 @@ cfg_if::cfg_if! {
             };
         }
     } else if #[cfg(cortex_m)] {
-        #[no_mangle]
-        unsafe fn _critical_section_acquire() -> u8 {
-            let primask = cortex_m::register::primask::read();
-            cortex_m::interrupt::disable();
-            primask.is_active() as _
-        }
-
-        #[no_mangle]
-        unsafe fn _critical_section_release(token: u8) {
-            if token != 0 {
-                cortex_m::interrupt::enable()
-            }
-        }
+      compile_error!("Critical section is not implemented for this target. You may need to supply a custom critical section implementation with the `custom-impl` feature or activate the `single-core-critical-section` feature of the `cortex-m` crate if you're targeting a single-core Cortex-M system.");
     } else if #[cfg(target_arch = "avr")] {
         #[no_mangle]
         unsafe fn _critical_section_acquire() -> u8 {
