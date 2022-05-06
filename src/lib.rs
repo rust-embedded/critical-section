@@ -1,7 +1,7 @@
 #![no_std]
 #![doc = include_str!("../README.md")]
 
-pub use bare_metal::CriticalSection;
+pub use bare_metal::{CriticalSection, Mutex};
 
 #[cfg(any(
     all(feature = "token-bool", feature = "token-u8"),

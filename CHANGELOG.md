@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Breaking change: removed all builtin impls. These are going to be provided by platform-support now.
 - Breaking change: make token type configurable. Default is `bool`. (The token type was previously fixed to `u8`).
+- Reexport `Mutex` from `bare_metal`.
 
 ## 0.2.7 - 2022-04-08
 
