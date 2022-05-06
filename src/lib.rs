@@ -23,20 +23,50 @@ compile_error!("You must set at most one of these Cargo features: token-bool, to
     feature = "token-u32",
     feature = "token-u64"
 )))]
-pub type RawToken = bool;
+type RawTokenInner = bool;
 
 #[cfg(feature = "token-u8")]
-pub type RawToken = u8;
+type RawTokenInner = u8;
 
 #[cfg(feature = "token-u16")]
-pub type RawToken = u16;
+type RawTokenInner = u16;
 
 #[cfg(feature = "token-u32")]
-pub type RawToken = u32;
+type RawTokenInner = u32;
 
 #[cfg(feature = "token-u64")]
-pub type RawToken = u64;
+type RawTokenInner = u64;
 
+// We have RawTokenInner and RawToken so that we don't have to copypaste the docs 5 times.
+// In the docs this shows as `pub type RawToken = u8` or whatever the selected type is, because
+// the "inner" type alias is private.
+
+/// Raw, transparent "restore token".
+///
+/// This type changes based on which Cargo feature is selected, out of
+/// - `token-bool`.
+/// - `token-u8`.
+/// - `token-u16`.
+/// - `token-u32`.
+/// - `token-u64`.
+///
+/// See [`Token`].
+///
+/// User code uses [`Token`] opaquely, critical section implementations
+/// use [`RawToken`] so that they can use the inner value.
+pub type RawToken = RawTokenInner;
+
+/// Opaque "restore token".
+///
+/// Implementations use this to "carry over" information between acquiring and releasing
+/// a critical section. For example, when nesting two critical sections of an
+/// implementation that disables interrupts globally, acquiring the inner one won't disable
+/// the interrupts since they're already disabled. The impl would use the token to "tell"
+/// the corresponding release that it does *not* have to reenable interrupts yet, only the
+/// outer release should do so.
+///
+/// User code uses [`Token`] opaquely, critical section implementations
+/// use [`RawToken`] so that they can use the inner value.
 pub struct Token(RawToken);
 
 /// Acquire a critical section in the current thread.
@@ -91,9 +121,9 @@ pub fn with<R>(f: impl FnOnce(CriticalSection) -> R) -> R {
     }
 }
 
-/// Methods required for a custom critical section implementation.
+/// Methods required for a critical section implementation.
 ///
-/// This trait is not intended to be used except when implementing a custom critical section.
+/// This trait is not intended to be used except when implementing a critical section.
 ///
 /// # Safety
 ///
@@ -105,7 +135,7 @@ pub unsafe trait Impl {
     unsafe fn release(token: RawToken);
 }
 
-/// Set the custom critical section implementation.
+/// Set the critical section implementation.
 ///
 /// # Example
 ///
