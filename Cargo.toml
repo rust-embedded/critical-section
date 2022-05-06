@@ -12,6 +12,17 @@ categories = [
     "concurrency",
 ]
 
+[features]
+
+# Set the token size.
+# The crate supplying the critical section implementation can set ONE of them.
+# Other crates MUST NOT set any of these.
+token-bool = []  # Default
+token-u8 = []
+token-u16 = []
+token-u32 = []
+token-u64 = []
+
 [dependencies]
 bare-metal = "1.0.0"
 

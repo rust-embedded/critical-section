@@ -31,16 +31,18 @@ This crate solves the problem by providing this missing universal API.
 ## Providing an implementation
 
 ```rust
-struct CriticalSection;
-critical_section::set_impl!(CriticalSection);
+use critical_section::RawToken;
 
-unsafe impl critical_section::Impl for CriticalSection {
-    unsafe fn acquire() -> u8 {
+struct MyCriticalSection;
+critical_section::set_impl!(MyCriticalSection);
+
+unsafe impl critical_section::Impl for MyCriticalSection {
+    unsafe fn acquire() -> RawToken {
         // TODO
-        return token;
+        return true
     }
 
-    unsafe fn release(token: u8) {
+    unsafe fn release(token: RawToken) {
         // TODO
     }
 }
