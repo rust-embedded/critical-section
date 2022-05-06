@@ -12,7 +12,7 @@ targets that don't support them, etc.
 
 There's a wide range of possible implementations depending on the execution environment:
 - For bare-metal single core, disabling interrupts globally.
-- For bare-metal multicore, acquiring a hardware spinlocks and disabling interrupts globally.
+- For bare-metal multicore, acquiring a hardware spinlock and disabling interrupts globally.
 - For bare-metal using a RTOS, it usually provides library functions for acquiring a critical section, often named "scheduler lock" or "kernel lock".
 - For bare-metal running in non-privileged mode, usually some system call is needed.
 - For `std` targets, acquiring a global `std::sync::Mutex`.
@@ -26,27 +26,13 @@ could be cases 1-4 from the above list.
 This crate solves the problem by providing this missing universal API.
 
 - It provides functions `acquire`, `release` and `free` that libraries can directly use.
-- It provides some built-in impls for well-known targets, so in many cases it Just Works.
-- It provides a way for any crate to supply a "custom impl" that overrides the built-in one. This allows environment-support crates such as RTOS bindings or HALs for multicore chips to supply the correct impl so that all the crates in the dependency tree automatically use it.
+- It provides a way for any crate to supply an implementation. This allows "target support" crates such as architecture crates (`cortex-m`, `riscv`), RTOS bindings, or HALs for multicore chips to supply the correct impl so that all the crates in the dependency tree automatically use it.
 
-## Built-in impls
-
-
-| Target             | Mechanism                 | Notes |
-|--------------------|---------------------------|-------------------|
-| thumbv[6-8]        | `cpsid` / `cpsie`.        | Only sound in single-core privileged mode. |
-| riscv32*           | set/clear `mstatus.mie`   | Only sound in single-core privileged mode. |
-| avr*               | `cli` / `sei`             | Only sound in single-core (does multicore AVR even exist?) |
-| std targets        | Global `std::sync::Mutex` |  |
-
-## Providing a custom impl
-
-- Enable the Cargo feature `custom-impl` in the `critical-section` crate.
-- Define it like the following:
+## Providing an implementation
 
 ```rust
 struct CriticalSection;
-critical_section::custom_impl!(CriticalSection);
+critical_section::set_impl!(CriticalSection);
 
 unsafe impl critical_section::Impl for CriticalSection {
     unsafe fn acquire() -> u8 {
@@ -60,7 +46,7 @@ unsafe impl critical_section::Impl for CriticalSection {
 }
 ```
 
-If you're writing a library crate that provides a custom impl, it is strongly recommended that
+If you're writing a library crate that provides an impl, it is strongly recommended that
 you only provide it if explicitly enabled by the user via a Cargo feature `critical-section-impl`.
 This allows the user to opt out from your impl to supply their own. 
 

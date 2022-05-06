@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-No unreleased changes yet
+- Breaking change: removed all builtin impls. These are going to be provided by platform-support now.
 
 ## 0.2.7 - 2022-04-08
 
