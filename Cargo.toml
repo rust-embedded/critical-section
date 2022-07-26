@@ -17,7 +17,8 @@ categories = [
 # Set the token size.
 # The crate supplying the critical section implementation can set ONE of them.
 # Other crates MUST NOT set any of these.
-token-bool = []  # Default
+token-none = []  # Default
+token-bool = []
 token-u8 = []
 token-u16 = []
 token-u32 = []

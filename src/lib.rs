@@ -4,6 +4,11 @@
 pub use bare_metal::{CriticalSection, Mutex};
 
 #[cfg(any(
+    all(feature = "token-none", feature = "token-bool"),
+    all(feature = "token-none", feature = "token-u8"),
+    all(feature = "token-none", feature = "token-u16"),
+    all(feature = "token-none", feature = "token-u32"),
+    all(feature = "token-none", feature = "token-u64"),
     all(feature = "token-bool", feature = "token-u8"),
     all(feature = "token-bool", feature = "token-u16"),
     all(feature = "token-bool", feature = "token-u32"),
@@ -15,14 +20,18 @@ pub use bare_metal::{CriticalSection, Mutex};
     all(feature = "token-u16", feature = "token-u64"),
     all(feature = "token-u32", feature = "token-u64"),
 ))]
-compile_error!("You must set at most one of these Cargo features: token-bool, token-u8, token-u16, token-u32, token-u64");
+compile_error!("You must set at most one of these Cargo features: token-none, token-bool, token-u8, token-u16, token-u32, token-u64");
 
 #[cfg(not(any(
+    feature = "token-bool",
     feature = "token-u8",
     feature = "token-u16",
     feature = "token-u32",
     feature = "token-u64"
 )))]
+type RawTokenInner = ();
+
+#[cfg(feature = "token-bool")]
 type RawTokenInner = bool;
 
 #[cfg(feature = "token-u8")]
