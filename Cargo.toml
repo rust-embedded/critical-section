@@ -24,9 +24,6 @@ restore-state-u16 = []
 restore-state-u32 = []
 restore-state-u64 = []
 
-[dependencies]
-bare-metal = "1.0.0"
-
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
