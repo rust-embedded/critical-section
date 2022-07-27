@@ -14,15 +14,15 @@ categories = [
 
 [features]
 
-# Set the token size.
+# Set the RestoreState size.
 # The crate supplying the critical section implementation can set ONE of them.
 # Other crates MUST NOT set any of these.
-token-none = []  # Default
-token-bool = []
-token-u8 = []
-token-u16 = []
-token-u32 = []
-token-u64 = []
+restore-state-none = []  # Default
+restore-state-bool = []
+restore-state-u8 = []
+restore-state-u16 = []
+restore-state-u32 = []
+restore-state-u64 = []
 
 [dependencies]
 bare-metal = "1.0.0"

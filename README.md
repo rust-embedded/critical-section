@@ -31,18 +31,17 @@ This crate solves the problem by providing this missing universal API.
 ## Providing an implementation
 
 ```rust
-use critical_section::RawToken;
+use critical_section::RawRestoreState;
 
 struct MyCriticalSection;
 critical_section::set_impl!(MyCriticalSection);
 
 unsafe impl critical_section::Impl for MyCriticalSection {
-    unsafe fn acquire() -> RawToken {
+    unsafe fn acquire() -> RawRestoreState {
         // TODO
-        return true
     }
 
-    unsafe fn release(token: RawToken) {
+    unsafe fn release(token: RawRestoreState) {
         // TODO
     }
 }
@@ -69,8 +68,8 @@ which would be unsound.
 This work is licensed under either of
 
 - Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE) or
-  http://www.apache.org/licenses/LICENSE-2.0)
-- MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
+  <http://www.apache.org/licenses/LICENSE-2.0>)
+- MIT license ([LICENSE-MIT](LICENSE-MIT) or <http://opensource.org/licenses/MIT>)
 
 at your option.
 

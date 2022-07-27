@@ -4,79 +4,80 @@
 pub use bare_metal::{CriticalSection, Mutex};
 
 #[cfg(any(
-    all(feature = "token-none", feature = "token-bool"),
-    all(feature = "token-none", feature = "token-u8"),
-    all(feature = "token-none", feature = "token-u16"),
-    all(feature = "token-none", feature = "token-u32"),
-    all(feature = "token-none", feature = "token-u64"),
-    all(feature = "token-bool", feature = "token-u8"),
-    all(feature = "token-bool", feature = "token-u16"),
-    all(feature = "token-bool", feature = "token-u32"),
-    all(feature = "token-bool", feature = "token-u64"),
-    all(feature = "token-u8", feature = "token-u16"),
-    all(feature = "token-u8", feature = "token-u32"),
-    all(feature = "token-u8", feature = "token-u64"),
-    all(feature = "token-u16", feature = "token-u32"),
-    all(feature = "token-u16", feature = "token-u64"),
-    all(feature = "token-u32", feature = "token-u64"),
+    all(feature = "restore-state-none", feature = "restore-state-bool"),
+    all(feature = "restore-state-none", feature = "restore-state-u8"),
+    all(feature = "restore-state-none", feature = "restore-state-u16"),
+    all(feature = "restore-state-none", feature = "restore-state-u32"),
+    all(feature = "restore-state-none", feature = "restore-state-u64"),
+    all(feature = "restore-state-bool", feature = "restore-state-u8"),
+    all(feature = "restore-state-bool", feature = "restore-state-u16"),
+    all(feature = "restore-state-bool", feature = "restore-state-u32"),
+    all(feature = "restore-state-bool", feature = "restore-state-u64"),
+    all(feature = "restore-state-u8", feature = "restore-state-u16"),
+    all(feature = "restore-state-u8", feature = "restore-state-u32"),
+    all(feature = "restore-state-u8", feature = "restore-state-u64"),
+    all(feature = "restore-state-u16", feature = "restore-state-u32"),
+    all(feature = "restore-state-u16", feature = "restore-state-u64"),
+    all(feature = "restore-state-u32", feature = "restore-state-u64"),
 ))]
-compile_error!("You must set at most one of these Cargo features: token-none, token-bool, token-u8, token-u16, token-u32, token-u64");
+compile_error!("You must set at most one of these Cargo features: restore-state-none, restore-state-bool, restore-state-u8, restore-state-u16, restore-state-u32, restore-state-u64");
 
 #[cfg(not(any(
-    feature = "token-bool",
-    feature = "token-u8",
-    feature = "token-u16",
-    feature = "token-u32",
-    feature = "token-u64"
+    feature = "restore-state-bool",
+    feature = "restore-state-u8",
+    feature = "restore-state-u16",
+    feature = "restore-state-u32",
+    feature = "restore-state-u64"
 )))]
-type RawTokenInner = ();
+type RawRestoreStateInner = ();
 
-#[cfg(feature = "token-bool")]
-type RawTokenInner = bool;
+#[cfg(feature = "restore-state-bool")]
+type RawRestoreStateInner = bool;
 
-#[cfg(feature = "token-u8")]
-type RawTokenInner = u8;
+#[cfg(feature = "restore-state-u8")]
+type RawRestoreStateInner = u8;
 
-#[cfg(feature = "token-u16")]
-type RawTokenInner = u16;
+#[cfg(feature = "restore-state-u16")]
+type RawRestoreStateInner = u16;
 
-#[cfg(feature = "token-u32")]
-type RawTokenInner = u32;
+#[cfg(feature = "restore-state-u32")]
+type RawRestoreStateInner = u32;
 
-#[cfg(feature = "token-u64")]
-type RawTokenInner = u64;
+#[cfg(feature = "restore-state-u64")]
+type RawRestoreStateInner = u64;
 
-// We have RawTokenInner and RawToken so that we don't have to copypaste the docs 5 times.
-// In the docs this shows as `pub type RawToken = u8` or whatever the selected type is, because
+// We have RawRestoreStateInner and RawRestoreState so that we don't have to copypaste the docs 5 times.
+// In the docs this shows as `pub type RawRestoreState = u8` or whatever the selected type is, because
 // the "inner" type alias is private.
 
-/// Raw, transparent "restore token".
+/// Raw, transparent "restore state".
 ///
 /// This type changes based on which Cargo feature is selected, out of
-/// - `token-bool`.
-/// - `token-u8`.
-/// - `token-u16`.
-/// - `token-u32`.
-/// - `token-u64`.
+/// - `restore-state-none` (default, makes the type be `()`)
+/// - `restore-state-bool`
+/// - `restore-state-u8`
+/// - `restore-state-u16`
+/// - `restore-state-u32`
+/// - `restore-state-u64`
 ///
-/// See [`Token`].
+/// See [`RestoreState`].
 ///
-/// User code uses [`Token`] opaquely, critical section implementations
-/// use [`RawToken`] so that they can use the inner value.
-pub type RawToken = RawTokenInner;
+/// User code uses [`RestoreState`] opaquely, critical section implementations
+/// use [`RawRestoreState`] so that they can use the inner value.
+pub type RawRestoreState = RawRestoreStateInner;
 
-/// Opaque "restore token".
+/// Opaque "restore state".
 ///
 /// Implementations use this to "carry over" information between acquiring and releasing
 /// a critical section. For example, when nesting two critical sections of an
 /// implementation that disables interrupts globally, acquiring the inner one won't disable
-/// the interrupts since they're already disabled. The impl would use the token to "tell"
+/// the interrupts since they're already disabled. The impl would use the restore state to "tell"
 /// the corresponding release that it does *not* have to reenable interrupts yet, only the
 /// outer release should do so.
 ///
-/// User code uses [`Token`] opaquely, critical section implementations
-/// use [`RawToken`] so that they can use the inner value.
-pub struct Token(RawToken);
+/// User code uses [`RestoreState`] opaquely, critical section implementations
+/// use [`RawRestoreState`] so that they can use the inner value.
+pub struct RestoreState(RawRestoreState);
 
 /// Acquire a critical section in the current thread.
 ///
@@ -88,17 +89,17 @@ pub struct Token(RawToken);
 /// # Safety
 ///
 /// - Each `acquire` call must be paired with exactly one `release` call in the same thread.
-/// - `acquire` returns a "restore token" that you must pass to the corresponding `release` call.
+/// - `acquire` returns a "restore state" that you must pass to the corresponding `release` call.
 /// - `acquire`/`release` pairs must be "properly nested", ie it's not OK to do `a=acquire(); b=acquire(); release(a); release(b);`.
 /// - It is UB to call `release` if the critical section is not acquired in the current thread.
-/// - It is UB to call `release` with a restore token that does not come from the corresponding `acquire` call.
+/// - It is UB to call `release` with a "restore state" that does not come from the corresponding `acquire` call.
 #[inline]
-pub unsafe fn acquire() -> Token {
+pub unsafe fn acquire() -> RestoreState {
     extern "Rust" {
-        fn _critical_section_acquire() -> RawToken;
+        fn _critical_section_acquire() -> RawRestoreState;
     }
 
-    Token(_critical_section_acquire())
+    RestoreState(_critical_section_acquire())
 }
 
 /// Release the critical section.
@@ -109,11 +110,11 @@ pub unsafe fn acquire() -> Token {
 ///
 /// See [`acquire`] for the safety contract description.
 #[inline]
-pub unsafe fn release(token: Token) {
+pub unsafe fn release(restore_state: RestoreState) {
     extern "Rust" {
-        fn _critical_section_release(token: RawToken);
+        fn _critical_section_release(restore_state: RawRestoreState);
     }
-    _critical_section_release(token.0)
+    _critical_section_release(restore_state.0)
 }
 
 /// Execute closure `f` in a critical section.
@@ -123,9 +124,9 @@ pub unsafe fn release(token: Token) {
 #[inline]
 pub fn with<R>(f: impl FnOnce(CriticalSection) -> R) -> R {
     unsafe {
-        let token = acquire();
+        let restore_state = acquire();
         let r = f(CriticalSection::new());
-        release(token);
+        release(restore_state);
         r
     }
 }
@@ -139,9 +140,9 @@ pub fn with<R>(f: impl FnOnce(CriticalSection) -> R) -> R {
 /// Implementations must uphold the contract specified in [`crate::acquire`] and [`crate::release`].
 pub unsafe trait Impl {
     /// Acquire the critical section.
-    unsafe fn acquire() -> RawToken;
+    unsafe fn acquire() -> RawRestoreState;
     /// Release the critical section.
-    unsafe fn release(token: RawToken);
+    unsafe fn release(restore_state: RawRestoreState);
 }
 
 /// Set the critical section implementation.
@@ -149,18 +150,17 @@ pub unsafe trait Impl {
 /// # Example
 ///
 /// ```
-/// use critical_section::RawToken;
+/// use critical_section::RawRestoreState;
 ///
 /// struct MyCriticalSection;
 /// critical_section::set_impl!(MyCriticalSection);
 ///
 /// unsafe impl critical_section::Impl for MyCriticalSection {
-///     unsafe fn acquire() -> RawToken {
+///     unsafe fn acquire() -> RawRestoreState {
 ///         // ...
-///         # return false
 ///     }
 ///
-///     unsafe fn release(token: RawToken) {
+///     unsafe fn release(restore_state: RawRestoreState) {
 ///         // ...
 ///     }
 /// }
@@ -169,12 +169,12 @@ pub unsafe trait Impl {
 macro_rules! set_impl {
     ($t: ty) => {
         #[no_mangle]
-        unsafe fn _critical_section_acquire() -> $crate::RawToken {
+        unsafe fn _critical_section_acquire() -> $crate::RawRestoreState {
             <$t as $crate::Impl>::acquire()
         }
         #[no_mangle]
-        unsafe fn _critical_section_release(token: $crate::RawToken) {
-            <$t as $crate::Impl>::release(token)
+        unsafe fn _critical_section_release(restore_state: $crate::RawRestoreState) {
+            <$t as $crate::Impl>::release(restore_state)
         }
     };
 }
