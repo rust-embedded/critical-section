@@ -1,13 +1,7 @@
 use super::CriticalSection;
 use core::cell::{Ref, RefCell, RefMut, UnsafeCell};
 
-/// A "mutex" based on critical sections.
-///
-/// # Safety
-///
-/// **This Mutex is only safe on single-core systems.**
-///
-/// On multi-core systems, a `CriticalSection` **is not sufficient** to ensure exclusive access.
+/// A mutex based on critical sections.
 ///
 /// # Design
 ///
@@ -172,7 +166,7 @@ impl<T: Default> Mutex<RefCell<T>> {
 
 // NOTE A `Mutex` can be used as a channel so the protected data must be `Send`
 // to prevent sending non-Sendable stuff (e.g. access tokens) across different
-// execution contexts (e.g. interrupts)
+// threads.
 unsafe impl<T> Sync for Mutex<T> where T: Send {}
 
 /// ``` compile_fail

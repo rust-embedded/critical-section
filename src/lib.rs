@@ -9,9 +9,8 @@ pub use self::mutex::Mutex;
 
 /// Critical section token.
 ///
-/// An instance of this type indicates that the current core is executing code within a critical
-/// section. This means that no interrupts must be enabled that could preempt the currently running
-/// code.
+/// An instance of this type indicates that the current thread is executing code within a critical
+/// section.
 #[derive(Clone, Copy, Debug)]
 pub struct CriticalSection<'cs> {
     _0: PhantomData<&'cs ()>,
@@ -25,9 +24,10 @@ impl<'cs> CriticalSection<'cs> {
     ///
     /// # Safety
     ///
-    /// This must only be called when the current core is in a critical section. The caller must
+    /// This must only be called when the current thread is in a critical section. The caller must
     /// ensure that the returned instance will not live beyond the end of the critical section.
-    /// Moreover, the caller must use adequate fences to prevent the compiler from moving the
+    ///
+    /// The caller must use adequate fences to prevent the compiler from moving the
     /// instructions inside the critical section to the outside of it. Sequentially consistent fences are
     /// suggested immediately after entry and immediately before exit from the critical section.
     ///
