@@ -1,6 +1,6 @@
 [package]
 name = "critical-section"
-version = "0.3.0"
+version = "1.0.0-alpha.1"
 edition = "2018"
 description = "Cross-platform critical section"
 repository = "https://github.com/embassy-rs/critical-section"
@@ -25,5 +25,4 @@ restore-state-u32 = []
 restore-state-u64 = []
 
 [package.metadata.docs.rs]
-all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
