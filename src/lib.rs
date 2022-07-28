@@ -169,10 +169,10 @@ impl RestoreState {
 #[inline]
 pub unsafe fn acquire() -> RestoreState {
     extern "Rust" {
-        fn _critical_section_acquire() -> RawRestoreState;
+        fn _critical_section_1_0_acquire() -> RawRestoreState;
     }
 
-    RestoreState(_critical_section_acquire())
+    RestoreState(_critical_section_1_0_acquire())
 }
 
 /// Release the critical section.
@@ -185,9 +185,9 @@ pub unsafe fn acquire() -> RestoreState {
 #[inline]
 pub unsafe fn release(restore_state: RestoreState) {
     extern "Rust" {
-        fn _critical_section_release(restore_state: RawRestoreState);
+        fn _critical_section_1_0_release(restore_state: RawRestoreState);
     }
-    _critical_section_release(restore_state.0)
+    _critical_section_1_0_release(restore_state.0)
 }
 
 /// Execute closure `f` in a critical section.
@@ -242,11 +242,11 @@ pub unsafe trait Impl {
 macro_rules! set_impl {
     ($t: ty) => {
         #[no_mangle]
-        unsafe fn _critical_section_acquire() -> $crate::RawRestoreState {
+        unsafe fn _critical_section_1_0_acquire() -> $crate::RawRestoreState {
             <$t as $crate::Impl>::acquire()
         }
         #[no_mangle]
-        unsafe fn _critical_section_release(restore_state: $crate::RawRestoreState) {
+        unsafe fn _critical_section_1_0_release(restore_state: $crate::RawRestoreState) {
             <$t as $crate::Impl>::release(restore_state)
         }
     };
