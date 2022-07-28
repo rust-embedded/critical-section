@@ -251,3 +251,73 @@ macro_rules! set_impl {
         }
     };
 }
+
+// Implement critical-section 0.2 primitives in terms of
+// the 1.0 ones, if possible.
+// Otherwise provide a dummy implementation which fails to compile
+// if the 0.2 ones are called.
+#[cfg(any(feature = "restore-state-none",))]
+mod compat {
+    extern "Rust" {
+        fn _critical_section_1_0_acquire() -> RawRestoreState;
+        fn _critical_section_1_0_release(restore_state: RawRestoreState);
+    }
+    #[no_mangle]
+    unsafe fn _critical_section_acquire() -> u8 {
+        _critical_section_1_0_acquire();
+        0
+    }
+
+    #[no_mangle]
+    unsafe fn _critical_section_release(_: u8) {
+        _critical_section_1_0_release()
+    }
+}
+#[cfg(any(feature = "restore-state-bool", feature = "restore-state-u8",))]
+mod compat {
+    extern "Rust" {
+        fn _critical_section_1_0_acquire() -> super::RawRestoreState;
+        fn _critical_section_1_0_release(restore_state: super::RawRestoreState);
+    }
+    #[no_mangle]
+    unsafe fn _critical_section_acquire() -> u8 {
+        _critical_section_1_0_acquire() as u8
+    }
+
+    #[no_mangle]
+    unsafe fn _critical_section_release(restore_state: u8) {
+        _critical_section_1_0_release(restore_state as _)
+    }
+}
+
+#[cfg(not(any(
+    feature = "restore-state-none",
+    feature = "restore-state-bool",
+    feature = "restore-state-u8",
+)))]
+mod compat {
+    extern "Rust" {
+        // This function is declared but never defined
+        fn _do_not_use_critical_section_version_0_2();
+    }
+
+    // If those functions are never called, they should be removed
+    // by the linker, so calling the undefined function
+    // _this_function_does_not_exist doesn't hurt.
+    //
+    // However, if some code uses critical-section 0.2 and references
+    // those functions, they'll be linked in and therefore linking
+    // fails.
+
+    #[no_mangle]
+    unsafe fn _critical_section_acquire() -> u8 {
+        _do_not_use_critical_section_version_0_2();
+        unreachable!();
+    }
+
+    #[no_mangle]
+    unsafe fn _critical_section_release(_: u8) {
+        _do_not_use_critical_section_version_0_2();
+        unreachable!();
+    }
+}
