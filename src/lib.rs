@@ -117,6 +117,41 @@ pub type RawRestoreState = RawRestoreStateInner;
 #[derive(Clone, Copy, Debug)]
 pub struct RestoreState(RawRestoreState);
 
+impl RestoreState {
+    /// Create an invalid, dummy  `RestoreState`.
+    ///
+    /// This can be useful to avoid `Option` when storing a `RestoreState` in a
+    /// struct field, or a `static`.
+    ///
+    /// Note that due to the safety contract of [`acquire`]/[`release`], you must not pass
+    /// a `RestoreState` obtained from this method to [`release`].
+    pub const fn invalid() -> Self {
+        #[cfg(not(any(
+            feature = "restore-state-bool",
+            feature = "restore-state-u8",
+            feature = "restore-state-u16",
+            feature = "restore-state-u32",
+            feature = "restore-state-u64"
+        )))]
+        return Self(());
+
+        #[cfg(feature = "restore-state-bool")]
+        return Self(false);
+
+        #[cfg(feature = "restore-state-u8")]
+        return Self(0);
+
+        #[cfg(feature = "restore-state-u16")]
+        return Self(0);
+
+        #[cfg(feature = "restore-state-u32")]
+        return Self(0);
+
+        #[cfg(feature = "restore-state-u64")]
+        return Self(0);
+    }
+}
+
 /// Acquire a critical section in the current thread.
 ///
 /// This function is extremely low level. Strongly prefer using [`with`] instead.
