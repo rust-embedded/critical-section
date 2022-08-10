@@ -1,6 +1,6 @@
 {
     "editor.formatOnSave": true,
     "rust-analyzer.procMacro.enable": true,
-    "rust-analyzer.cargo.runBuildScripts": true,
-    "rust-analyzer.assist.importGranularity": "module",
+    "rust-analyzer.cargo.buildScripts.enable": true,
+    "rust-analyzer.imports.granularity.group": "module",
 }
