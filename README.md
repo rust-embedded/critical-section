@@ -1,4 +1,4 @@
-# critical-section
+# critical-section hello
 [![crates.io](https://img.shields.io/crates/d/critical-section.svg)](https://crates.io/crates/critical-section)
 [![crates.io](https://img.shields.io/crates/v/critical-section.svg)](https://crates.io/crates/critical-section)
 [![Documentation](https://docs.rs/critical-section/badge.svg)](https://docs.rs/critical-section)
