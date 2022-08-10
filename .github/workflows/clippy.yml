@@ -1,19 +1,14 @@
-name: Rust
+name: Clippy check
 
 on:
   push:
-    branches: [main]
+    branches: [ staging, trying, main ]
   pull_request:
-    branches: [main]
-
-env:
-  CARGO_TERM_COLOR: always
 
 jobs:
-  test:
+  clippy:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
       - name: Build
-        run: cargo test
+        run: cargo clippy
