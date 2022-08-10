@@ -172,6 +172,7 @@ pub unsafe fn acquire() -> RestoreState {
         fn _critical_section_1_0_acquire() -> RawRestoreState;
     }
 
+    #[allow(clippy::unit_arg)]
     RestoreState(_critical_section_1_0_acquire())
 }
 
@@ -187,6 +188,7 @@ pub unsafe fn release(restore_state: RestoreState) {
     extern "Rust" {
         fn _critical_section_1_0_release(restore_state: RawRestoreState);
     }
+    #[allow(clippy::unit_arg)]
     _critical_section_1_0_release(restore_state.0)
 }
 
@@ -213,8 +215,17 @@ pub fn with<R>(f: impl FnOnce(CriticalSection) -> R) -> R {
 /// Implementations must uphold the contract specified in [`crate::acquire`] and [`crate::release`].
 pub unsafe trait Impl {
     /// Acquire the critical section.
+    ///
+    /// # Safety
+    ///
+    /// Callers must uphold the contract specified in [`crate::acquire`] and [`crate::release`].
     unsafe fn acquire() -> RawRestoreState;
+
     /// Release the critical section.
+    ///
+    /// # Safety
+    ///
+    /// Callers must uphold the contract specified in [`crate::acquire`] and [`crate::release`].
     unsafe fn release(restore_state: RawRestoreState);
 }
 
