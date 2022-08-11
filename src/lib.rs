@@ -114,6 +114,7 @@ pub type RawRestoreState = RawRestoreStateInner;
 ///
 /// User code uses [`RestoreState`] opaquely, critical section implementations
 /// use [`RawRestoreState`] so that they can use the inner value.
+#[repr(transparent)]
 #[derive(Clone, Copy, Debug)]
 pub struct RestoreState(RawRestoreState);
 
@@ -188,6 +189,7 @@ pub unsafe fn release(restore_state: RestoreState) {
     extern "Rust" {
         fn _critical_section_1_0_release(restore_state: RawRestoreState);
     }
+
     #[allow(clippy::unit_arg)]
     _critical_section_1_0_release(restore_state.0)
 }
