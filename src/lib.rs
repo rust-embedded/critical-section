@@ -13,7 +13,7 @@ pub use self::mutex::Mutex;
 /// section.
 #[derive(Clone, Copy, Debug)]
 pub struct CriticalSection<'cs> {
-    _0: PhantomData<&'cs ()>,
+    _private: PhantomData<&'cs ()>,
 }
 
 impl<'cs> CriticalSection<'cs> {
@@ -36,7 +36,9 @@ impl<'cs> CriticalSection<'cs> {
     /// inferred to `'static`.
     #[inline(always)]
     pub unsafe fn new() -> Self {
-        CriticalSection { _0: PhantomData }
+        CriticalSection {
+            _private: PhantomData,
+        }
     }
 }
 
