@@ -79,7 +79,7 @@ Crates adding support for a particular architecture, chip or operating system sh
 It is **strongly recommended** to gate the implementation behind a feature, so the user can still use another implementation
 if needed (having two implementations in the same binary will cause linking to fail).
 
-Add the dependency, and a a `critical-section-*` feature to your `Cargo.toml`:
+Add the dependency, and a `critical-section-*` feature to your `Cargo.toml`:
 
 ```toml
 [features]
