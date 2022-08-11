@@ -28,7 +28,7 @@ could be cases 1-4 from the above list.
 
 This crate solves the problem by providing this missing universal API.
 
-- It provides functions `acquire`, `release` and `free` that libraries can directly use.
+- It provides functions `acquire`, `release` and `with` that libraries can directly use.
 - It provides a way for any crate to supply an implementation. This allows "target support" crates such as architecture crates (`cortex-m`, `riscv`), RTOS bindings, or HALs for multicore chips to supply the correct impl so that all the crates in the dependency tree automatically use it.
 
 ## Providing an implementation
@@ -85,7 +85,7 @@ dual licensed as above, without any additional terms or conditions.
 ## Code of Conduct
 
 Contribution to this crate is organized under the terms of the [Rust Code of
-Conduct][CoC], the maintainer of this crate, the [Cortex-M team][team], promises
+Conduct][CoC], the maintainer of this crate, the [HAL team][team], promises
 to intervene to uphold that code of conduct.
 
 [CoC]: CODE_OF_CONDUCT.md
