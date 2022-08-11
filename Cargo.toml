@@ -23,6 +23,3 @@ restore-state-u8 = []
 restore-state-u16 = []
 restore-state-u32 = []
 restore-state-u64 = []
-
-[package.metadata.docs.rs]
-rustdoc-args = ["--cfg", "docsrs"]

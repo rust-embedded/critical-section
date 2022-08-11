@@ -13,7 +13,7 @@ pub use self::mutex::Mutex;
 /// section.
 #[derive(Clone, Copy, Debug)]
 pub struct CriticalSection<'cs> {
-    _0: PhantomData<&'cs ()>,
+    _private: PhantomData<&'cs ()>,
 }
 
 impl<'cs> CriticalSection<'cs> {
@@ -36,7 +36,9 @@ impl<'cs> CriticalSection<'cs> {
     /// inferred to `'static`.
     #[inline(always)]
     pub unsafe fn new() -> Self {
-        CriticalSection { _0: PhantomData }
+        CriticalSection {
+            _private: PhantomData,
+        }
     }
 }
 
@@ -114,6 +116,7 @@ pub type RawRestoreState = RawRestoreStateInner;
 ///
 /// User code uses [`RestoreState`] opaquely, critical section implementations
 /// use [`RawRestoreState`] so that they can use the inner value.
+#[repr(transparent)]
 #[derive(Clone, Copy, Debug)]
 pub struct RestoreState(RawRestoreState);
 
@@ -166,7 +169,7 @@ impl RestoreState {
 /// - `acquire`/`release` pairs must be "properly nested", ie it's not OK to do `a=acquire(); b=acquire(); release(a); release(b);`.
 /// - It is UB to call `release` if the critical section is not acquired in the current thread.
 /// - It is UB to call `release` with a "restore state" that does not come from the corresponding `acquire` call.
-#[inline]
+#[inline(always)]
 pub unsafe fn acquire() -> RestoreState {
     extern "Rust" {
         fn _critical_section_1_0_acquire() -> RawRestoreState;
@@ -183,11 +186,12 @@ pub unsafe fn acquire() -> RestoreState {
 /// # Safety
 ///
 /// See [`acquire`] for the safety contract description.
-#[inline]
+#[inline(always)]
 pub unsafe fn release(restore_state: RestoreState) {
     extern "Rust" {
         fn _critical_section_1_0_release(restore_state: RawRestoreState);
     }
+
     #[allow(clippy::unit_arg)]
     _critical_section_1_0_release(restore_state.0)
 }
