@@ -167,7 +167,7 @@ impl RestoreState {
 /// - `acquire`/`release` pairs must be "properly nested", ie it's not OK to do `a=acquire(); b=acquire(); release(a); release(b);`.
 /// - It is UB to call `release` if the critical section is not acquired in the current thread.
 /// - It is UB to call `release` with a "restore state" that does not come from the corresponding `acquire` call.
-#[inline]
+#[inline(always)]
 pub unsafe fn acquire() -> RestoreState {
     extern "Rust" {
         fn _critical_section_1_0_acquire() -> RawRestoreState;
@@ -184,7 +184,7 @@ pub unsafe fn acquire() -> RestoreState {
 /// # Safety
 ///
 /// See [`acquire`] for the safety contract description.
-#[inline]
+#[inline(always)]
 pub unsafe fn release(restore_state: RestoreState) {
     extern "Rust" {
         fn _critical_section_1_0_release(restore_state: RawRestoreState);
