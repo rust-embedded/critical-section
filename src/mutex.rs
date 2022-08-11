@@ -175,6 +175,5 @@ unsafe impl<T> Sync for Mutex<T> where T: Send {}
 ///     x.borrow(cs)
 /// }
 /// ```
-#[allow(dead_code)]
-#[doc(hidden)]
-const GH_6: () = ();
+#[cfg(doctest)]
+const BorrowMustNotOutliveMutexTest: () = ();
