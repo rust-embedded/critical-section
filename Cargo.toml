@@ -1,9 +1,9 @@
 [package]
 name = "critical-section"
-version = "1.0.0-alpha.2"
-edition = "2018"
+version = "1.0.0"
+edition = "2021"
 description = "Cross-platform critical section"
-repository = "https://github.com/embassy-rs/critical-section"
+repository = "https://github.com/rust-embedded/critical-section"
 readme = "README.md"
 license = "MIT OR Apache-2.0"
 categories = [
