@@ -1,7 +1,9 @@
-#![no_std]
+#![cfg_attr(not(feature = "std"), no_std)]
 #![doc = include_str!("../README.md")]
 
 mod mutex;
+#[cfg(feature = "std")]
+mod std;
 
 use core::marker::PhantomData;
 
