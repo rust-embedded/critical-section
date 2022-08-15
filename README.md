@@ -160,6 +160,10 @@ be generic.
 - It would allow mixing different critical section implementations in the same program,
 which would be unsound.
 
+## Minimum Supported Rust Version (MSRV)
+
+This crate is guaranteed to compile on stable Rust 1.63 and up. It might compile with older versions but that may change in any new patch release.
+
 ## License
 
 This work is licensed under either of
