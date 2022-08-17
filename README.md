@@ -8,9 +8,9 @@ This project is developed and maintained by the [HAL team][team].
 A critical section that works everywhere!
 
 When writing software for embedded systems, it's common to use a "critical section"
-as a basic primitive to control concurrency. A critical section is essentially a 
-mutex global to the whole process, that can be acquired by only one thread at a time. 
-This can be used to protect data behind mutexes, to [emulate atomics](https://github.com/embassy-rs/atomic-polyfill) in 
+as a basic primitive to control concurrency. A critical section is essentially a
+mutex global to the whole process, that can be acquired by only one thread at a time.
+This can be used to protect data behind mutexes, to [emulate atomics](https://github.com/embassy-rs/atomic-polyfill) in
 targets that don't support them, etc.
 
 There's a wide range of possible implementations depending on the execution environment:
@@ -86,7 +86,7 @@ critical-section = { version = "1.1", features = ["std"]}
 If you're writing a library intended to be portable across many targets, simply add a dependency on `critical-section`
 and use `critical_section::free` and/or `Mutex` as usual.
 
-**Do not** add any dependency supplying a critical section implementation. Do not enable any `critical-section-*` Cargo feature. 
+**Do not** add any dependency supplying a critical section implementation. Do not enable any `critical-section-*` Cargo feature.
 This has to be done by the end user, enabling the correct implementation for their target.
 
 **Do not** enable any Cargo feature in `critical-section`.
@@ -175,7 +175,7 @@ error: symbol `_critical_section_1_0_acquire` is already defined
 ```
 
 it is because you have two crates trying to provide a critical section implementation. You can only
-have one implementation in a program. 
+have one implementation in a program.
 
 You can use `cargo tree --format '{p} {f}'` to view all dependencies and their enabled features. Make sure
 that in the whole dependency tree, exactly one implementation is provided.
@@ -190,7 +190,7 @@ code that needs acquiring the critical section generic over it. This has a few p
 
 - It would require passing it as a generic param to a very big amount of code, which
 would be quite unergonomic.
-- It's common to put `Mutex`es in `static` variables, and `static`s can't 
+- It's common to put `Mutex`es in `static` variables, and `static`s can't
 be generic.
 - It would allow mixing different critical section implementations in the same program,
 which would be unsound.
@@ -199,10 +199,12 @@ which would be unsound.
 
 This crate is guaranteed to compile on the following Rust versions:
 
-- If the `std` feature is not enabled: stable Rust 1.54 and up. 
-- If the `std` feature is enabled: stable Rust 1.63 and up. 
+- If the `std` feature is not enabled: stable Rust 1.54 and up.
+- If the `std` feature is enabled: stable Rust 1.63 and up.
 
 It might compile with older versions but that may change in any new patch release.
+
+See [here](docs/msrv.md) for details on how the MSRV may be upgraded.
 
 ## License
 
