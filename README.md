@@ -31,11 +31,16 @@ This crate solves the problem by providing this missing universal API.
 - It provides functions `acquire`, `release` and `with` that libraries can directly use.
 - It provides a way for any crate to supply an implementation. This allows "target support" crates such as architecture crates (`cortex-m`, `riscv`), RTOS bindings, or HALs for multicore chips to supply the correct implementation so that all the crates in the dependency tree automatically use it.
 
-## Usage
+## Usage in `no-std` binaries.
 
 First, add a dependency on a crate providing a critical section implementation. Enable the `critical-section-*` Cargo feature if required by the crate.
 
+Implementations are typically provided by either architecture-support crates (`cortex-m`, `riscv`, etc), or HAL crates.
+
+For example, for single-core Cortex-M targets, you can use:
+
 ```toml
+[dependencies]
 cortex-m = { version = "0.7.6", features = ["critical-section-single-core"]}
 ```
 
@@ -63,6 +68,16 @@ critical_section::with(|cs| {
 # }
 ```
 
+## Usage in `std` binaries.
+
+Add the `critical-section` dependency to `Cargo.toml` enabling the `std` feature. This makes the `critical-section` crate itself
+provide an implementation based on `std::sync::Mutex`, so you don't have to add any other dependency.
+
+```toml
+[dependencies]
+critical-section = { version = "1.1", features = ["std"]}
+```
+
 ## Usage in libraries
 
 If you're writing a library intended to be portable across many targets, simply add a dependency on `critical-section`
@@ -72,6 +87,20 @@ and use `critical_section::free` and/or `Mutex` as usual.
 This has to be done by the end user, enabling the correct implementation for their target.
 
 **Do not** enable any Cargo feature in `critical-section`.
+
+## Usage in `std` tests for `no-std` libraries.
+
+If you want to run `std`-using tests in otherwise `no-std` libraries, enable the `std` feature in `dev-dependencies` only.
+This way the main target will use the `no-std` implementation chosen by the end-user's binary, and only the test targets
+will use the `std` implementation.
+
+```toml
+[dependencies]
+critical-section = "1.1"
+
+[dev-dependencies]
+critical-section = { version = "1.1", features = ["std"]}
+```
 
 ## Providing an implementation
 
