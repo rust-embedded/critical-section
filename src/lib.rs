@@ -118,7 +118,6 @@ pub type RawRestoreState = RawRestoreStateInner;
 ///
 /// User code uses [`RestoreState`] opaquely, critical section implementations
 /// use [`RawRestoreState`] so that they can use the inner value.
-#[repr(transparent)]
 #[derive(Clone, Copy, Debug)]
 pub struct RestoreState(RawRestoreState);
 
