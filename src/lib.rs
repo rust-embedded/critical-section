@@ -239,6 +239,8 @@ pub unsafe trait Impl {
 /// # Example
 ///
 /// ```
+/// # #[cfg(not(feature = "std"))] // needed for `cargo test --features std`
+/// # mod no_std {
 /// use critical_section::RawRestoreState;
 ///
 /// struct MyCriticalSection;
@@ -253,7 +255,7 @@ pub unsafe trait Impl {
 ///         // ...
 ///     }
 /// }
-///
+/// # }
 #[macro_export]
 macro_rules! set_impl {
     ($t: ty) => {

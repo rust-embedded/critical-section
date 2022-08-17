@@ -60,11 +60,14 @@ critical_section::with(|cs| {
     MY_VALUE.borrow(cs).set(42);
 });
 
-# struct MyCriticalSection;
-# critical_section::set_impl!(MyCriticalSection);
-# unsafe impl critical_section::Impl for MyCriticalSection {
-#     unsafe fn acquire() -> () {}
-#     unsafe fn release(token: ()) {}
+# #[cfg(not(feature = "std"))] // needed for `cargo test --features std`
+# mod no_std {
+#     struct MyCriticalSection;
+#     critical_section::set_impl!(MyCriticalSection);
+#     unsafe impl critical_section::Impl for MyCriticalSection {
+#         unsafe fn acquire() -> () {}
+#         unsafe fn release(token: ()) {}
+#     }
 # }
 ```
 
@@ -122,6 +125,8 @@ critical-section = { version = "1.0", optional = true }
 Then, provide the critical implementation like this:
 
 ```rust
+# #[cfg(not(feature = "std"))] // needed for `cargo test --features std`
+# mod no_std {
 // This is a type alias for the enabled `restore-state-*` feature.
 // For example, it is `bool` if you enable `restore-state-bool`.
 use critical_section::RawRestoreState;
@@ -138,6 +143,7 @@ unsafe impl critical_section::Impl for MyCriticalSection {
         // TODO
     }
 }
+# }
 ```
 
 ## Troubleshooting
