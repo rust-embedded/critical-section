@@ -1,7 +1,7 @@
 [package]
 name = "critical-section"
 version = "1.0.0"
-edition = "2021"
+edition = "2018"
 description = "Cross-platform critical section"
 repository = "https://github.com/rust-embedded/critical-section"
 readme = "README.md"
@@ -13,6 +13,11 @@ categories = [
 ]
 
 [features]
+
+# Enable a critical-section implementation for platforms supporting `std`, based on `std::sync::Mutex`.
+# If you enable this, the `critical-section` crate itself provides the implementation,
+# you don't have to get another crate to to do it.
+std = ["restore-state-bool"]
 
 # Set the RestoreState size.
 # The crate supplying the critical section implementation can set ONE of them.

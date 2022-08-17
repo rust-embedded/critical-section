@@ -1,7 +1,9 @@
-#![no_std]
+#![cfg_attr(not(feature = "std"), no_std)]
 #![doc = include_str!("../README.md")]
 
 mod mutex;
+#[cfg(feature = "std")]
+mod std;
 
 use core::marker::PhantomData;
 
@@ -116,7 +118,6 @@ pub type RawRestoreState = RawRestoreStateInner;
 ///
 /// User code uses [`RestoreState`] opaquely, critical section implementations
 /// use [`RawRestoreState`] so that they can use the inner value.
-#[repr(transparent)]
 #[derive(Clone, Copy, Debug)]
 pub struct RestoreState(RawRestoreState);
 
@@ -238,6 +239,8 @@ pub unsafe trait Impl {
 /// # Example
 ///
 /// ```
+/// # #[cfg(not(feature = "std"))] // needed for `cargo test --features std`
+/// # mod no_std {
 /// use critical_section::RawRestoreState;
 ///
 /// struct MyCriticalSection;
@@ -252,7 +255,7 @@ pub unsafe trait Impl {
 ///         // ...
 ///     }
 /// }
-///
+/// # }
 #[macro_export]
 macro_rules! set_impl {
     ($t: ty) => {
