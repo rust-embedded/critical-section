@@ -17,8 +17,6 @@ jobs:
             features: ''
           - rust: 1.63
             features: 'std'
-          - rust: nightly
-            features: 'unpoison_mutex'
     steps:
       - uses: actions/checkout@v2
       - name: Install Rust

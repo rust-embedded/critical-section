@@ -1,6 +1,5 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 #![doc = include_str!("../README.md")]
-#![cfg_attr(feature = "mutex_unpoison", feature(mutex_unpoison))]
 
 mod mutex;
 #[cfg(feature = "std")]
@@ -39,7 +38,9 @@ impl<'cs> CriticalSection<'cs> {
     /// inferred to `'static`.
     #[inline(always)]
     pub unsafe fn new() -> Self {
-        CriticalSection { _private: PhantomData }
+        CriticalSection {
+            _private: PhantomData,
+        }
     }
 }
 

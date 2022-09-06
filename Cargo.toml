@@ -18,7 +18,6 @@ categories = [
 # If you enable this, the `critical-section` crate itself provides the implementation,
 # you don't have to get another crate to to do it.
 std = ["restore-state-bool"]
-unpoison_mutex = []
 
 # Set the RestoreState size.
 # The crate supplying the critical section implementation can set ONE of them.

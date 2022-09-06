@@ -2,7 +2,7 @@ use std::cell::Cell;
 use std::mem::MaybeUninit;
 use std::sync::{Mutex, MutexGuard};
 
-static mut GLOBAL_MUTEX: Mutex<()> = Mutex::new(());
+static GLOBAL_MUTEX: Mutex<()> = Mutex::new(());
 
 // This is initialized if a thread has acquired the CS, uninitialized otherwise.
 static mut GLOBAL_GUARD: MaybeUninit<MutexGuard<'static, ()>> = MaybeUninit::uninit();
@@ -27,7 +27,14 @@ unsafe impl crate::Impl for StdCriticalSection {
             l.set(true);
 
             // Not acquired in the current thread, acquire it.
-            let guard = unsafe { GLOBAL_MUTEX.lock().unwrap() };
+            let guard = match GLOBAL_MUTEX.lock() {
+                Ok(guard) => guard,
+                Err(err) => {
+                    // Ignore poison on the global mutex in case a panic occurred
+                    // while the mutex was held.
+                    err.into_inner()
+                }
+            };
             GLOBAL_GUARD.write(guard);
 
             false
@@ -40,23 +47,6 @@ unsafe impl crate::Impl for StdCriticalSection {
             // if the critical section is acquired in the current thread,
             // in which case we know the GLOBAL_GUARD is initialized.
             GLOBAL_GUARD.assume_init_drop();
-
-            // Clear poison on the global mutex in case a panic occurred
-            // while the mutex was held.
-            #[cfg(feature = "mutex_unpoison")]
-            GLOBAL_MUTEX.clear_poison();
-
-            #[cfg(not(feature = "mutex_unpoison"))]
-            unsafe {
-                if GLOBAL_MUTEX.is_poisoned() {
-                    static UNPOISON_MUTEX: Mutex<()> = Mutex::new(());
-                    let _guard = UNPOISON_MUTEX.lock().unwrap();
-
-                    // `GLOBAL_MUTEX` is protected by the lock on `UNPOISON_MUTEX`,
-                    // so we can re-initialize it.
-                    GLOBAL_MUTEX = Mutex::new(());
-                }
-            }
 
             // Note: it is fine to clear this flag *after* releasing the mutex because it's thread local.
             // No other thread can see its value, there's no potential for races.
@@ -76,7 +66,7 @@ mod tests {
     #[test]
     #[should_panic(expected = "Not a PoisonError!")]
     fn reusable_after_panic() {
-        thread::spawn(|| {
+        let _ = thread::spawn(|| {
             critical_section::with(|_| {
                 panic!("Boom!");
             })

@@ -58,7 +58,9 @@ impl<T> Mutex<T> {
     /// Creates a new mutex.
     #[inline]
     pub const fn new(value: T) -> Self {
-        Mutex { inner: UnsafeCell::new(value) }
+        Mutex {
+            inner: UnsafeCell::new(value),
+        }
     }
 
     /// Gets a mutable reference to the contained value when the mutex is already uniquely borrowed.
