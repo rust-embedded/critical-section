@@ -1,5 +1,6 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 #![doc = include_str!("../README.md")]
+#![cfg_attr(feature = "mutex_unpoison", feature(mutex_unpoison))]
 
 mod mutex;
 #[cfg(feature = "std")]
@@ -38,9 +39,7 @@ impl<'cs> CriticalSection<'cs> {
     /// inferred to `'static`.
     #[inline(always)]
     pub unsafe fn new() -> Self {
-        CriticalSection {
-            _private: PhantomData,
-        }
+        CriticalSection { _private: PhantomData }
     }
 }
 
@@ -203,12 +202,21 @@ pub unsafe fn release(restore_state: RestoreState) {
 /// are mostly no-ops since they're already protected by the outer one.
 #[inline]
 pub fn with<R>(f: impl FnOnce(CriticalSection) -> R) -> R {
-    unsafe {
-        let restore_state = acquire();
-        let r = f(CriticalSection::new());
-        release(restore_state);
-        r
+    // Helper for making sure `release` is called even if `f` panics.
+    struct Guard {
+        state: RestoreState,
     }
+
+    impl Drop for Guard {
+        fn drop(&mut self) {
+            unsafe { release(self.state) }
+        }
+    }
+
+    let state = unsafe { acquire() };
+    let _guard = Guard { state };
+
+    unsafe { f(CriticalSection::new()) }
 }
 
 /// Methods required for a critical section implementation.
