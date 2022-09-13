@@ -27,8 +27,16 @@ unsafe impl crate::Impl for StdCriticalSection {
             l.set(true);
 
             // Not acquired in the current thread, acquire it.
-            let guard = GLOBAL_MUTEX.lock().unwrap();
+            let guard = match GLOBAL_MUTEX.lock() {
+                Ok(guard) => guard,
+                Err(err) => {
+                    // Ignore poison on the global mutex in case a panic occurred
+                    // while the mutex was held.
+                    err.into_inner()
+                }
+            };
             GLOBAL_GUARD.write(guard);
+
             false
         })
     }
@@ -45,5 +53,28 @@ unsafe impl crate::Impl for StdCriticalSection {
             // This way, we hold the mutex for slightly less time.
             IS_LOCKED.with(|l| l.set(false));
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::thread;
+
+    use crate as critical_section;
+
+    #[cfg(feature = "std")]
+    #[test]
+    #[should_panic(expected = "Not a PoisonError!")]
+    fn reusable_after_panic() {
+        let _ = thread::spawn(|| {
+            critical_section::with(|_| {
+                panic!("Boom!");
+            })
+        })
+        .join();
+
+        critical_section::with(|_| {
+            panic!("Not a PoisonError!");
+        })
     }
 }

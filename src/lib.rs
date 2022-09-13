@@ -201,14 +201,29 @@ pub unsafe fn release(restore_state: RestoreState) {
 ///
 /// Nesting critical sections is allowed. The inner critical sections
 /// are mostly no-ops since they're already protected by the outer one.
+///
+/// # Panics
+///
+/// This function panics if the given closure `f` panics. In this case
+/// the critical section is released before unwinding.
 #[inline]
 pub fn with<R>(f: impl FnOnce(CriticalSection) -> R) -> R {
-    unsafe {
-        let restore_state = acquire();
-        let r = f(CriticalSection::new());
-        release(restore_state);
-        r
+    // Helper for making sure `release` is called even if `f` panics.
+    struct Guard {
+        state: RestoreState,
     }
+
+    impl Drop for Guard {
+        #[inline(always)]
+        fn drop(&mut self) {
+            unsafe { release(self.state) }
+        }
+    }
+
+    let state = unsafe { acquire() };
+    let _guard = Guard { state };
+
+    unsafe { f(CriticalSection::new()) }
 }
 
 /// Methods required for a critical section implementation.
