@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - (Add unreleased changes here)
 
+## [v1.1.1] - 2022-09-13
+
+- On the `std` implementation, panicking inside the `critical_section::with()` closure no longer accidentally leaves the critical section locked (#26).
+
 ## [v1.1.0] - 2022-08-17
 
 - Added built-in critical section implementation using `std::sync::Mutex`, enabled by the `std` Cargo feature.
@@ -68,7 +72,8 @@ Breaking changes:
 
 - First release
 
-[Unreleased]: https://github.com/rust-embedded/critical-section/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/rust-embedded/critical-section/compare/v1.1.1...HEAD
+[v1.1.1]: https://github.com/rust-embedded/critical-section/compare/v1.1.0...v1.1.1
 [v1.1.0]: https://github.com/rust-embedded/critical-section/compare/v1.0.0...v1.1.0
 [v1.0.0]: https://github.com/rust-embedded/critical-section/compare/v1.0.0-alpha.2...v1.0.0
 [v1.0.0-alpha.2]: https://github.com/rust-embedded/critical-section/compare/v1.0.0-alpha.1...v1.0.0-alpha.2
