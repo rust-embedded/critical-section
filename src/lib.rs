@@ -170,6 +170,9 @@ impl RestoreState {
 /// - `acquire`/`release` pairs must be "properly nested", ie it's not OK to do `a=acquire(); b=acquire(); release(a); release(b);`.
 /// - It is UB to call `release` if the critical section is not acquired in the current thread.
 /// - It is UB to call `release` with a "restore state" that does not come from the corresponding `acquire` call.
+/// - It must provide ordering guarantees at least equivalent to a [`core::sync::atomic::Ordering::Acquire`]
+///   on a memory location shared by all critical sections, on which the `release` call will do a
+///   [`core::sync::atomic::Ordering::Release`] operation.
 #[inline(always)]
 pub unsafe fn acquire() -> RestoreState {
     extern "Rust" {
