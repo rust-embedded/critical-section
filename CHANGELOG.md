@@ -7,7 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-No unreleased changes yet
+- Implemented critical-section by forwarding to version 1.1.1
+
+Breaking changes:
+
+- `acquire` and `release` are only implemented if the restore-state used by
+  version 1.1.1 is an u8 or smaller.
+- No default critical-section implementation is provided.
+
+Those breaking changes are necessary because versions <= 0.2.7 were unsound, and that
+was impossible to fix without a breaking change.
+
+This version is meant to minimize that breaking change. However, all
+users are encouraged to upgrade to critical-section 1.1.
 
 ## 0.2.7 - 2022-04-08
 
