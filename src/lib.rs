@@ -4,6 +4,8 @@
 
 pub use bare_metal::CriticalSection;
 
+use critical_section_1::RawRestoreState;
+
 /// Acquire a critical section in the current thread.
 ///
 /// This function is extremely low level. Strongly prefer using [`with`] instead.
@@ -24,7 +26,7 @@ pub unsafe fn acquire() -> u8 {
     extern "Rust" {
         fn _critical_section_1_0_acquire() -> critical_section_1::RawRestoreState;
     }
-    _critical_section_1_0_acquire().to_u8()
+    <RawRestoreState as ConvertRestoreState>::to_u8(_critical_section_1_0_acquire())
 }
 
 /// Release the critical section.
@@ -40,7 +42,7 @@ pub unsafe fn release(token: u8) {
     extern "Rust" {
         fn _critical_section_1_0_release(restore_state: critical_section_1::RawRestoreState);
     }
-    _critical_section_1_0_release(critical_section_1::RawRestoreState::from_u8(token));
+    _critical_section_1_0_release(<RawRestoreState as ConvertRestoreState>::from_u8(token));
 }
 
 /// Execute closure `f` in a critical section.
@@ -52,13 +54,13 @@ pub fn with<R>(f: impl FnOnce(CriticalSection) -> R) -> R {
     critical_section_1::with(|_| f(unsafe { CriticalSection::new() }))
 }
 
-// Extension trait which implements conversions between ResultState and u8, if possible
-trait ConvertResultState {
+// Extension trait which implements conversions between RestoreState and u8, if possible
+trait ConvertRestoreState {
     fn to_u8(self) -> u8;
     fn from_u8(state: u8) -> Self;
 }
 
-impl ConvertResultState for () {
+impl ConvertRestoreState for () {
     fn to_u8(self) -> u8 {
         0
     }
@@ -66,7 +68,7 @@ impl ConvertResultState for () {
     fn from_u8(_state: u8) -> Self {}
 }
 
-impl ConvertResultState for bool {
+impl ConvertRestoreState for bool {
     fn to_u8(self) -> u8 {
         self.into()
     }
@@ -76,7 +78,7 @@ impl ConvertResultState for bool {
     }
 }
 
-impl ConvertResultState for u8 {
+impl ConvertRestoreState for u8 {
     fn to_u8(self) -> u8 {
         self
     }
@@ -84,30 +86,6 @@ impl ConvertResultState for u8 {
     fn from_u8(state: u8) -> Self {
         state
     }
-}
-
-// These should never be called, as `acquire`/`release` now call
-// the critical-section 1.0 implementations, directly.
-//
-// However, if somehow an version <= 0.2.7 of critical-section gets
-// linked in, it may reference the old names.
-
-#[allow(clippy::unit_arg)]
-#[no_mangle]
-unsafe fn _critical_section_acquire() -> u8 {
-    extern "Rust" {
-        fn _critical_section_1_0_acquire() -> critical_section_1::RawRestoreState;
-    }
-    _critical_section_1_0_acquire().to_u8()
-}
-
-#[allow(clippy::unit_arg)]
-#[no_mangle]
-unsafe fn _critical_section_release(token: u8) {
-    extern "Rust" {
-        fn _critical_section_1_0_release(restore_state: critical_section_1::RawRestoreState);
-    }
-    _critical_section_1_0_release(critical_section_1::RawRestoreState::from_u8(token));
 }
 
 #[cfg(feature = "custom-impl")]
