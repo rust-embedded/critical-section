@@ -26,17 +26,24 @@ could be cases 1-4 from the above list.
 This crate solves the problem by providing this missing universal API.
 
 - It provides functions `acquire`, `release` and `free` that libraries can directly use.
-- It provides some built-in impls for well-known targets, so in many cases it Just Works.
+- ~~It provides some built-in impls for well-known targets, so in many cases it Just Works.~~
 - It provides a way for any crate to supply a "custom impl" that overrides the built-in one. This allows environment-support crates such as RTOS bindings or HALs for multicore chips to supply the correct impl so that all the crates in the dependency tree automatically use it.
 
 ## Built-in impls
 
+Versions up to 0.2.7 provided default built-in impls for some architectures. Those were
+only sound in single-core privileged mode. Because they were unsound in other situations,
+and there is no way to detect those situations at compile-time, those implementations
+were removed in version 0.2.8.
 
-| Target             | Mechanism                 | Notes |
-|--------------------|---------------------------|-------------------|
-| thumbv[6-8]        | `cpsid` / `cpsie`.        | Only sound in single-core privileged mode. |
-| riscv32*           | set/clear `mstatus.mie`   | Only sound in single-core privileged mode. |
-| std targets        | Global `std::sync::Mutex` |  |
+If the build fails with a (possibly long) linker error message, containing
+text like `error: undefined symbol: _critical_section_1_0_acquire`, that's caused by
+those missing implementations.
+
+To fix the build, you should add a dependency on `critical-section = "1.1"`, and
+[provide a critical-section implementation](https://crates.io/crates/critical-section#usage-in-no-std-binaries).
+
+If possible, you should also remove the dependency on version 0.2.x.
 
 ## Providing a custom impl
 
