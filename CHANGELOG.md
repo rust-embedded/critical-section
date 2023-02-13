@@ -36,6 +36,46 @@ Breaking changes:
 - RestoreState type is now configurable with Cargo features. Default is `()`. (previously it was fixed to `u8`.)
 - Added own `CriticalSection` and `Mutex` types, instead of reexporting them from `bare_metal`.
 
+## [v0.2.8] - 2022-11-29
+
+- Implemented critical-section by forwarding to version 1.1.1
+
+Breaking changes:
+
+- `acquire` and `release` are only implemented if the restore-state used by
+  version 1.1.1 is an u8 or smaller.
+- No default critical-section implementation is provided.
+
+Those breaking changes are necessary because versions <= 0.2.7 were unsound, and that
+was impossible to fix without a breaking change.
+
+This version is meant to minimize that breaking change. However, all
+users are encouraged to upgrade to critical-section 1.1.
+
+If you're seeing a linker error like `undefined symbol: _critical_section_1_0_acquire`, you're affected. To fix it:
+
+- If your target supports `std`: Add the `critical-section` dependency to `Cargo.toml` enabling the `std` feature.
+
+  ```toml
+  [dependencies]
+  critical-section = { version = "1.1", features = ["std"]}
+  ```
+
+- For single-core Cortex-M targets in privileged mode:
+  ```toml
+  [dependencies]
+  cortex-m = { version = "0.7.6", features = ["critical-section-single-core"]}
+  ```
+
+- For single-hart RISC-V targets in privileged mode:
+  ```toml
+  [dependencies]
+  riscv = { version = "0.10", features = ["critical-section-single-hart"]}
+  ```
+
+- For other targets: check if your HAL or architecture-support crate has a `critical-section 1.0` implementation available. Otherwise, [provide your own](https://github.com/rust-embedded/critical-section#providing-an-implementation).
+
+
 ## [v0.2.7] - 2022-04-08
 
 - Add support for AVR targets.
@@ -78,6 +118,7 @@ Breaking changes:
 [v1.0.0]: https://github.com/rust-embedded/critical-section/compare/v1.0.0-alpha.2...v1.0.0
 [v1.0.0-alpha.2]: https://github.com/rust-embedded/critical-section/compare/v1.0.0-alpha.1...v1.0.0-alpha.2
 [v1.0.0-alpha.1]: https://github.com/rust-embedded/critical-section/compare/v0.2.7...v1.0.0-alpha.1
+[v0.2.8]: https://github.com/rust-embedded/critical-section/compare/v0.2.7...v0.2.8
 [v0.2.7]: https://github.com/rust-embedded/critical-section/compare/v0.2.6...v0.2.7
 [v0.2.6]: https://github.com/rust-embedded/critical-section/compare/v0.2.5...v0.2.6
 [v0.2.5]: https://github.com/rust-embedded/critical-section/compare/v0.2.4...v0.2.5
