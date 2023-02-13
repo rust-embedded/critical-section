@@ -14,14 +14,14 @@ This can be used to protect data behind mutexes, to [emulate atomics](https://gi
 targets that don't support them, etc.
 
 There's a wide range of possible implementations depending on the execution environment:
-- For bare-metal single core, disabling interrupts globally.
-- For bare-metal multicore, acquiring a hardware spinlock and disabling interrupts globally.
-- For bare-metal using a RTOS, it usually provides library functions for acquiring a critical section, often named "scheduler lock" or "kernel lock".
-- For bare-metal running in non-privileged mode, usually some system call is needed.
+- For bare-metal single core, disabling interrupts in the current (only) core.
+- For bare-metal multicore, disabling interrupts in the current core and acquiring a hardware spinlock to prevent other cores from entering a critical section concurrently.
+- For bare-metal using a RTOS, using library functions for acquiring a critical section, often named "scheduler lock" or "kernel lock".
+- For bare-metal running in non-privileged mode, calling some system call is usually needed.
 - For `std` targets, acquiring a global `std::sync::Mutex`.
 
 Libraries often need to use critical sections, but there's no universal API for this in `core`. This leads
-library authors to hardcode them for their target, or at best add some `cfg`s to support a few targets.
+library authors to hard-code them for their target, or at best add some `cfg`s to support a few targets.
 This doesn't scale since there are many targets out there, and in the general case it's impossible to know
 which critical section implementation is needed from the Rust target alone. For example, the `thumbv7em-none-eabi` target
 could be cases 1-4 from the above list.
