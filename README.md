@@ -10,7 +10,7 @@ A critical section that works everywhere!
 When writing software for embedded systems, it's common to use a "critical section"
 as a basic primitive to control concurrency. A critical section is essentially a
 mutex global to the whole process, that can be acquired by only one thread at a time.
-This can be used to protect data behind mutexes, to [emulate atomics](https://github.com/embassy-rs/atomic-polyfill) in
+This can be used to protect data behind mutexes, to [emulate atomics](https://crates.io/crates/portable-atomic) in
 targets that don't support them, etc.
 
 There's a wide range of possible implementations depending on the execution environment:
