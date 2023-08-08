@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- (Add unreleased changes here)
+- Clarified that `acquire()` must provide ordering guarantees
+- Updated atomic-polyfill reference to point to portable-atomic instead
+- Improved documentation for `Mutex` example
+- Added list of some known implementations
 
 ## [v1.1.1] - 2022-09-13
 

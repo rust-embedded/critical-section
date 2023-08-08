@@ -35,7 +35,25 @@ This crate solves the problem by providing this missing universal API.
 
 First, add a dependency on a crate providing a critical section implementation. Enable the `critical-section-*` Cargo feature if required by the crate.
 
-Implementations are typically provided by either architecture-support crates (`cortex-m`, `riscv`, etc), or HAL crates.
+Implementations are typically provided by either architecture-support crates, HAL crates, and OS/RTOS bindings, including:
+
+* The [`cortex-m`] crate provides an implementation for all single-core Cortex-M microcontrollers via its `critical-section-single-core` feature
+* The [`riscv`] crate provides an implementation for all single-hart RISC-V microcontrollers via its `critical-section-single-hart` feature
+* The [`msp430`] crate provides an implementation for all MSP430 microcontrollers via its `critical-section-single-core` feature
+* The [`rp2040-hal`] crate provides a multi-core-safe critical section for the RP2040 microcontroller via its `critical-section-impl` feature
+* The [`avr-device`] crate provides an implementation for all AVR microcontrollers via its `critical-section-impl` feature
+* The [`esp-hal-common`] crate provides an implementation for ESP32 microcontrollers which is used by the ESP HALs
+* The [`embassy-rp`] crate provides a multi-core-safe critical section for the RP2040 microcontroller via its `critical-section-impl` feature
+* The [`nrf-softdevice`] crate provides a critical section that's compatible with the nRF soft-device firmware via its `critical-section-impl` feature
+
+[`cortex-m`]: https://crates.io/crates/cortex-m
+[`riscv`]: https://crates.io/crates/riscv
+[`msp430`]: https://crates.io/crates/msp430
+[`rp2040-hal`]: https://crates.io/crates/rp2040-hal
+[`avr-device`]: https://crates.io/crates/avr-device
+[`esp-hal-common`]: https://crates.io/crates/esp-hal-common
+[`embassy-rp`]: https://docs.embassy.dev/embassy-rp
+[`nrf-softdevice`]: https://docs.embassy.dev/nrf-softdevice
 
 For example, for single-core Cortex-M targets, you can use:
 

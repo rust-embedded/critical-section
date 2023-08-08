@@ -3,6 +3,26 @@ use core::cell::{Ref, RefCell, RefMut, UnsafeCell};
 
 /// A mutex based on critical sections.
 ///
+/// # Example
+///
+/// ```no_run
+/// # use critical_section::Mutex;
+/// # use std::cell::Cell;
+///
+/// static FOO: Mutex<Cell<i32>> = Mutex::new(Cell::new(42));
+///
+/// fn main() {
+///     critical_section::with(|cs| {
+///         FOO.borrow(cs).set(43);
+///     });
+/// }
+///
+/// fn interrupt_handler() {
+///     let _x = critical_section::with(|cs| FOO.borrow(cs).get());
+/// }
+/// ```
+///
+///
 /// # Design
 ///
 /// [`std::sync::Mutex`] has two purposes. It converts types that are [`Send`]
