@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+No unreleased changes yet
+
+## [v1.1.2] - 2023-08-09
+
 - Clarified that `acquire()` must provide ordering guarantees
 - Updated atomic-polyfill reference to point to portable-atomic instead
 - Improved documentation for `Mutex` example
@@ -115,7 +119,8 @@ If you're seeing a linker error like `undefined symbol: _critical_section_1_0_ac
 
 - First release
 
-[Unreleased]: https://github.com/rust-embedded/critical-section/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/rust-embedded/critical-section/compare/v1.1.2...HEAD
+[v1.1.2]: https://github.com/rust-embedded/critical-section/compare/v1.1.1...v1.1.2
 [v1.1.1]: https://github.com/rust-embedded/critical-section/compare/v1.1.0...v1.1.1
 [v1.1.0]: https://github.com/rust-embedded/critical-section/compare/v1.0.0...v1.1.0
 [v1.0.0]: https://github.com/rust-embedded/critical-section/compare/v1.0.0-alpha.2...v1.0.0
