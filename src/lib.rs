@@ -54,21 +54,27 @@ impl<'cs> CriticalSection<'cs> {
     all(feature = "restore-state-bool", feature = "restore-state-u16"),
     all(feature = "restore-state-bool", feature = "restore-state-u32"),
     all(feature = "restore-state-bool", feature = "restore-state-u64"),
+    all(feature = "restore-state-bool", feature = "restore-state-usize"),
     all(feature = "restore-state-u8", feature = "restore-state-u16"),
     all(feature = "restore-state-u8", feature = "restore-state-u32"),
     all(feature = "restore-state-u8", feature = "restore-state-u64"),
+    all(feature = "restore-state-u8", feature = "restore-state-usize"),
     all(feature = "restore-state-u16", feature = "restore-state-u32"),
     all(feature = "restore-state-u16", feature = "restore-state-u64"),
+    all(feature = "restore-state-u16", feature = "restore-state-usize"),
     all(feature = "restore-state-u32", feature = "restore-state-u64"),
+    all(feature = "restore-state-u32", feature = "restore-state-usize"),
+    all(feature = "restore-state-u64", feature = "restore-state-usize"),
 ))]
-compile_error!("You must set at most one of these Cargo features: restore-state-none, restore-state-bool, restore-state-u8, restore-state-u16, restore-state-u32, restore-state-u64");
+compile_error!("You must set at most one of these Cargo features: restore-state-none, restore-state-bool, restore-state-u8, restore-state-u16, restore-state-u32, restore-state-u64, restore-state-usize");
 
 #[cfg(not(any(
     feature = "restore-state-bool",
     feature = "restore-state-u8",
     feature = "restore-state-u16",
     feature = "restore-state-u32",
-    feature = "restore-state-u64"
+    feature = "restore-state-u64",
+    feature = "restore-state-usize"
 )))]
 type RawRestoreStateInner = ();
 
@@ -87,6 +93,9 @@ type RawRestoreStateInner = u32;
 #[cfg(feature = "restore-state-u64")]
 type RawRestoreStateInner = u64;
 
+#[cfg(feature = "restore-state-usize")]
+type RawRestoreStateInner = usize;
+
 // We have RawRestoreStateInner and RawRestoreState so that we don't have to copypaste the docs 5 times.
 // In the docs this shows as `pub type RawRestoreState = u8` or whatever the selected type is, because
 // the "inner" type alias is private.
@@ -100,6 +109,7 @@ type RawRestoreStateInner = u64;
 /// - `restore-state-u16`
 /// - `restore-state-u32`
 /// - `restore-state-u64`
+/// - `restore-state-usize`
 ///
 /// See [`RestoreState`].
 ///
