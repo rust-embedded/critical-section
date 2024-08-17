@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-No unreleased changes yet
+- Added a `?Sized` constraint to `T` in `Mutex<T>`, allowing it to work with unsized types, such as trait objects.
 
 ## [v1.1.2] - 2023-08-09
 
@@ -69,19 +69,20 @@ If you're seeing a linker error like `undefined symbol: _critical_section_1_0_ac
   ```
 
 - For single-core Cortex-M targets in privileged mode:
+
   ```toml
   [dependencies]
   cortex-m = { version = "0.7.6", features = ["critical-section-single-core"]}
   ```
 
 - For single-hart RISC-V targets in privileged mode:
+
   ```toml
   [dependencies]
   riscv = { version = "0.10", features = ["critical-section-single-hart"]}
   ```
 
 - For other targets: check if your HAL or architecture-support crate has a `critical-section 1.0` implementation available. Otherwise, [provide your own](https://github.com/rust-embedded/critical-section#providing-an-implementation).
-
 
 ## [v0.2.7] - 2022-04-08
 
