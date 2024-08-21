@@ -145,7 +145,8 @@ impl RestoreState {
             feature = "restore-state-u8",
             feature = "restore-state-u16",
             feature = "restore-state-u32",
-            feature = "restore-state-u64"
+            feature = "restore-state-u64",
+            feature = "restore-state-usize"
         )))]
         return Self(());
 
@@ -162,6 +163,9 @@ impl RestoreState {
         return Self(0);
 
         #[cfg(feature = "restore-state-u64")]
+        return Self(0);
+
+        #[cfg(feature = "restore-state-usize")]
         return Self(0);
     }
 }
