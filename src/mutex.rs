@@ -71,7 +71,7 @@ use core::cell::{Ref, RefCell, RefMut, UnsafeCell};
 /// [`std::sync::Mutex`]: https://doc.rust-lang.org/std/sync/struct.Mutex.html
 /// [interior mutability]: https://doc.rust-lang.org/reference/interior-mutability.html
 #[derive(Debug)]
-pub struct Mutex<T> {
+pub struct Mutex<T: ?Sized> {
     inner: UnsafeCell<T>,
 }
 
