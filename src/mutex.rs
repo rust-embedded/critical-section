@@ -1,5 +1,8 @@
 use super::CriticalSection;
-use core::cell::{Ref, RefCell, RefMut, UnsafeCell};
+use core::{
+    cell::{Ref, RefCell, RefMut},
+    mem::MaybeUninit,
+};
 
 /// A mutex based on critical sections.
 ///
@@ -72,7 +75,15 @@ use core::cell::{Ref, RefCell, RefMut, UnsafeCell};
 /// [interior mutability]: https://doc.rust-lang.org/reference/interior-mutability.html
 #[derive(Debug)]
 pub struct Mutex<T> {
-    inner: UnsafeCell<T>,
+    // The `MaybeUninit` is not strictly necessary here: In theory, just using `T` should
+    // be fine.
+    // However, without `MaybeUninit`, the compiler may use niches inside `T`, and may
+    // read the niche value _without locking the mutex_. As we don't provide interior
+    // mutability, this is still not violating any aliasing rules and should be perfectly
+    // fine. But as the cost of adding `MaybeUninit` is very small, we add it out of
+    // cautiousness, just in case the reason `T` is not `Sync` in the first place is
+    // something very obscure we didn't consider.
+    inner: MaybeUninit<T>,
 }
 
 impl<T> Mutex<T> {
@@ -80,7 +91,7 @@ impl<T> Mutex<T> {
     #[inline]
     pub const fn new(value: T) -> Self {
         Mutex {
-            inner: UnsafeCell::new(value),
+            inner: MaybeUninit::new(value),
         }
     }
 
@@ -92,19 +103,22 @@ impl<T> Mutex<T> {
     /// unwanted optimizations.
     #[inline]
     pub fn get_mut(&mut self) -> &mut T {
-        unsafe { &mut *self.inner.get() }
+        // Safety: inner is always initialized
+        unsafe { self.inner.assume_init_mut() }
     }
 
     /// Unwraps the contained value, consuming the mutex.
     #[inline]
     pub fn into_inner(self) -> T {
-        self.inner.into_inner()
+        // Safety: inner is always initialized
+        unsafe { self.inner.assume_init() }
     }
 
     /// Borrows the data for the duration of the critical section.
     #[inline]
     pub fn borrow<'cs>(&'cs self, _cs: CriticalSection<'cs>) -> &'cs T {
-        unsafe { &*self.inner.get() }
+        // Safety: inner is always initialized
+        unsafe { self.inner.assume_init_ref() }
     }
 }
 
