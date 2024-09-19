@@ -110,8 +110,10 @@ impl<T> Mutex<T> {
     /// Unwraps the contained value, consuming the mutex.
     #[inline]
     pub fn into_inner(self) -> T {
-        // Safety: inner is always initialized
-        unsafe { self.inner.assume_init() }
+        // Safety:
+        // - inner is always initialized
+        // - self will be dropped at the end of the function, _not_ dropping the contents of MaybeUninit
+        unsafe { self.inner.as_ptr().read() }
     }
 
     /// Borrows the data for the duration of the critical section.
@@ -196,6 +198,15 @@ impl<T: Default> Mutex<RefCell<T>> {
     #[track_caller]
     pub fn take<'cs>(&'cs self, cs: CriticalSection<'cs>) -> T {
         self.borrow(cs).take()
+    }
+}
+
+impl<T> Drop for Mutex<T> {
+    fn drop(&mut self) {
+        // Safety:
+        // - inner is always initialized
+        // - self will be dropped at the end of the function, _not_ dropping the contents of MaybeUninit
+        core::mem::drop(unsafe { self.inner.as_ptr().read() });
     }
 }
 
