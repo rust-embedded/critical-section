@@ -72,6 +72,14 @@ use core::cell::{Ref, RefCell, RefMut, UnsafeCell};
 /// [interior mutability]: https://doc.rust-lang.org/reference/interior-mutability.html
 #[derive(Debug)]
 pub struct Mutex<T> {
+    // The `UnsafeCell` is not strictly necessary here: In theory, just using `T` should
+    // be fine.
+    // However, without `UnsafeCell`, the compiler may use niches inside `T`, and may
+    // read the niche value _without locking the mutex_. As we don't provide interior
+    // mutability, this is still not violating any aliasing rules and should be perfectly
+    // fine. But as the cost of adding `UnsafeCell` is very small, we add it out of
+    // cautiousness, just in case the reason `T` is not `Sync` in the first place is
+    // something very obscure we didn't consider.
     inner: UnsafeCell<T>,
 }
 
