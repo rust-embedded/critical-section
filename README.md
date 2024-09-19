@@ -217,7 +217,7 @@ which would be unsound.
 
 This crate is guaranteed to compile on the following Rust versions:
 
-- If the `std` feature is not enabled: stable Rust 1.54 and up.
+- If the `std` feature is not enabled: stable Rust 1.55 and up.
 - If the `std` feature is enabled: stable Rust 1.63 and up.
 
 It might compile with older versions but that may change in any new patch release.
