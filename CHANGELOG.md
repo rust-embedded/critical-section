@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 No unreleased changes yet
 
+## [v1.2.0] - 2024-10-16
+
+- Soundness fix: ensure the `CriticalSection` token is not `Send` or `Sync`, so that it can only be used in the thread that acquired it. [#55](https://github.com/rust-embedded/critical-section/issues/55)
+- Soundness fix: Fix aliasing `&mut` in the `std` implementation. [#46](https://github.com/rust-embedded/critical-section/pull/46)
+- Fix build with `restore-state-usize`. [#50](https://github.com/rust-embedded/critical-section/pull/50)
+
 ## [v1.1.3] - 2024-08-22
 
 - Added option to use a `usize` sized restore state
@@ -123,8 +129,9 @@ If you're seeing a linker error like `undefined symbol: _critical_section_1_0_ac
 
 - First release
 
-[Unreleased]: https://github.com/rust-embedded/critical-section/compare/v1.1.3...HEAD
-[v1.1.2]: https://github.com/rust-embedded/critical-section/compare/v1.1.2...v1.1.3
+[Unreleased]: https://github.com/rust-embedded/critical-section/compare/v1.2.0...HEAD
+[v1.2.0]: https://github.com/rust-embedded/critical-section/compare/v1.1.3...v1.2.0
+[v1.1.3]: https://github.com/rust-embedded/critical-section/compare/v1.1.2...v1.1.3
 [v1.1.2]: https://github.com/rust-embedded/critical-section/compare/v1.1.1...v1.1.2
 [v1.1.1]: https://github.com/rust-embedded/critical-section/compare/v1.1.0...v1.1.1
 [v1.1.0]: https://github.com/rust-embedded/critical-section/compare/v1.0.0...v1.1.0

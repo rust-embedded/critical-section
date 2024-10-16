@@ -16,6 +16,10 @@ pub use self::mutex::Mutex;
 #[derive(Clone, Copy, Debug)]
 pub struct CriticalSection<'cs> {
     _private: PhantomData<&'cs ()>,
+
+    // Prevent CriticalSection from being Send or Sync
+    // https://github.com/rust-embedded/critical-section/issues/55
+    _not_send_sync: PhantomData<*mut ()>,
 }
 
 impl<'cs> CriticalSection<'cs> {
@@ -40,6 +44,7 @@ impl<'cs> CriticalSection<'cs> {
     pub unsafe fn new() -> Self {
         CriticalSection {
             _private: PhantomData,
+            _not_send_sync: PhantomData,
         }
     }
 }
