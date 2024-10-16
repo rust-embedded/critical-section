@@ -46,7 +46,14 @@ unsafe impl crate::Impl for StdCriticalSection {
             // SAFETY: As per the acquire/release safety contract, release can only be called
             // if the critical section is acquired in the current thread,
             // in which case we know the GLOBAL_GUARD is initialized.
-            GLOBAL_GUARD.assume_init_drop();
+            //
+            // We have to `assume_init_read` then drop instead of `assume_init_drop` because:
+            // - drop requires exclusive access (&mut) to the contents
+            // - mutex guard drop first unlocks the mutex, then returns. In between those, there's a brief
+            //   moment where the mutex is unlocked but a `&mut` to the contents exists.
+            // - During this moment, another thread can go and use GLOBAL_GUARD, causing `&mut` aliasing.
+            #[allow(let_underscore_lock)]
+            let _ = GLOBAL_GUARD.assume_init_read();
 
             // Note: it is fine to clear this flag *after* releasing the mutex because it's thread local.
             // No other thread can see its value, there's no potential for races.
