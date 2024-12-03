@@ -42,7 +42,7 @@ Implementations are typically provided by either architecture-support crates, HA
 * The [`msp430`] crate provides an implementation for all MSP430 microcontrollers via its `critical-section-single-core` feature
 * The [`rp2040-hal`] crate provides a multi-core-safe critical section for the RP2040 microcontroller via its `critical-section-impl` feature
 * The [`avr-device`] crate provides an implementation for all AVR microcontrollers via its `critical-section-impl` feature
-* The [`esp-hal-common`] crate provides an implementation for ESP32 microcontrollers which is used by the ESP HALs
+* The [`esp-hal`] crate provides an implementation for ESP32 microcontrollers which is used by the ESP HALs
 * The [`embassy-rp`] crate provides a multi-core-safe critical section for the RP2040 microcontroller via its `critical-section-impl` feature
 * The [`nrf-softdevice`] crate provides a critical section that's compatible with the nRF soft-device firmware via its `critical-section-impl` feature
 
@@ -51,7 +51,7 @@ Implementations are typically provided by either architecture-support crates, HA
 [`msp430`]: https://crates.io/crates/msp430
 [`rp2040-hal`]: https://crates.io/crates/rp2040-hal
 [`avr-device`]: https://crates.io/crates/avr-device
-[`esp-hal-common`]: https://crates.io/crates/esp-hal-common
+[`esp-hal`]: https://crates.io/crates/esp-hal
 [`embassy-rp`]: https://docs.embassy.dev/embassy-rp
 [`nrf-softdevice`]: https://docs.embassy.dev/nrf-softdevice
 
