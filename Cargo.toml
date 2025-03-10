@@ -29,3 +29,9 @@ restore-state-u16 = []
 restore-state-u32 = []
 restore-state-u64 = []
 restore-state-usize = []
+
+[target.'cfg(loom)'.dependencies]
+loom = "0.7.2"
+
+[lints.rust]
+unexpected_cfgs = { level = "allow", check-cfg = ['cfg(loom)'] }

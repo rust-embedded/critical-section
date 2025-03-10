@@ -99,6 +99,13 @@ provide an implementation based on `std::sync::Mutex`, so you don't have to add 
 critical-section = { version = "1.1", features = ["std"]}
 ```
 
+## Usage in [`loom`] tests
+
+`critical-section` supports [`loom`] by enabling the `std` feature and passing `--cfg loom` as `RUSTFLAGS` (either through `.cargo/config.toml`, or through the environment variable).
+This implementation is identical to the normal `std` implementation, but uses `loom` synchronization primitives instead.
+
+[`loom`]: https://docs.rs/loom/latest/loom/#writing-tests
+
 ## Usage in libraries
 
 If you're writing a library intended to be portable across many targets, simply add a dependency on `critical-section`
@@ -219,6 +226,7 @@ This crate is guaranteed to compile on the following Rust versions:
 
 - If the `std` feature is not enabled: stable Rust 1.54 and up.
 - If the `std` feature is enabled: stable Rust 1.63 and up.
+- If the `std` feature and `--cfg loom` are enabled: stable Rust 1.73 and up.
 
 It might compile with older versions but that may change in any new patch release.
 

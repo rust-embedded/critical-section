@@ -18,6 +18,10 @@ jobs:
             features: ''
           - rust: 1.63
             features: 'std'
+          - rust: 1.73
+            features: 'std'
+            cfgs: "--cfg loom"
+
     steps:
       - uses: actions/checkout@v2
       - name: Install Rust
@@ -27,4 +31,4 @@ jobs:
             components: clippy
             override: true
       - name: Clippy check
-        run: cargo clippy --features "${{matrix.features}}"
+        run: RUSTFLAGS="${{matrix.cfgs}}" cargo clippy --features "${{matrix.features}}"
