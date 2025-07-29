@@ -1,13 +1,31 @@
-use std::cell::Cell;
 use std::mem::MaybeUninit;
-use std::sync::{Mutex, MutexGuard};
 
+#[cfg(not(loom))]
+use std::{
+    cell::Cell,
+    sync::{Mutex, MutexGuard},
+    thread_local,
+};
+
+#[cfg(loom)]
+use loom::{
+    cell::Cell,
+    sync::{Mutex, MutexGuard},
+    thread_local,
+};
+
+#[cfg(not(loom))]
 static GLOBAL_MUTEX: Mutex<()> = Mutex::new(());
+
+#[cfg(loom)]
+loom::lazy_static! {
+    static ref GLOBAL_MUTEX: Mutex<()> = Mutex::new(());
+}
 
 // This is initialized if a thread has acquired the CS, uninitialized otherwise.
 static mut GLOBAL_GUARD: MaybeUninit<MutexGuard<'static, ()>> = MaybeUninit::uninit();
 
-std::thread_local!(static IS_LOCKED: Cell<bool> = Cell::new(false));
+thread_local!(static IS_LOCKED: Cell<bool> = Cell::new(false));
 
 struct StdCriticalSection;
 crate::set_impl!(StdCriticalSection);
@@ -64,6 +82,7 @@ unsafe impl crate::Impl for StdCriticalSection {
 }
 
 #[cfg(test)]
+#[cfg(not(loom))]
 mod tests {
     use std::thread;
 
@@ -82,6 +101,33 @@ mod tests {
 
         critical_section::with(|_| {
             panic!("Not a PoisonError!");
+        })
+    }
+}
+
+#[cfg(test)]
+#[cfg(loom)]
+mod tests {
+    use crate as critical_section;
+
+    #[cfg(feature = "std")]
+    #[test]
+    #[should_panic(expected = "Not a PoisonError!")]
+    fn reusable_after_panic_loom() {
+        loom::model(|| {
+            // IMPORTANT: using `std::thread` here because `loom` is effectively
+            // single-threaded, so panicking in `loom::thread` will panic the
+            // entire test.
+            let _ = std::thread::spawn(|| {
+                critical_section::with(|_| {
+                    panic!("Boom!");
+                });
+            })
+            .join();
+
+            critical_section::with(|_| {
+                panic!("Not a PoisonError!");
+            })
         })
     }
 }
