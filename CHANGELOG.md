@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-No unreleased changes yet
+- Add support for [`loom`](https://docs.rs/loom) critical sections (using `cfg(loom)`) to the `std` implementation. [#58](https://github.com/rust-embedded/critical-section/pull/58)
 
 ## [v1.2.0] - 2024-10-16
 
