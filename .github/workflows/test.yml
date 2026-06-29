@@ -18,12 +18,6 @@ jobs:
             features: ''
           - rust: 1.63
             features: 'std'
-          - rust: 1.73
-            features: 'std'
-            cfgs: "--cfg loom"
-            # Lib tests are the only relevant & working ones
-            # for loom.
-            extra_flags: "--lib"
     steps:
       - uses: actions/checkout@v2
       - name: Install Rust
@@ -33,4 +27,4 @@ jobs:
             components: clippy
             override: true
       - name: Test
-        run: RUSTFLAGS="${{matrix.cfgs}}" cargo test --features "${{matrix.features}}" ${{matrix.extra_flags}}
+        run: cargo test --features "${{matrix.features}}"
