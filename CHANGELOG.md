@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-No unreleased changes yet.
+- Add `from_raw` and `into_raw` methods to `RestoreState`.
 
 ## [v1.3.0] - 2026-06-02
 
