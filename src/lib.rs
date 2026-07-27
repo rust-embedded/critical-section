@@ -137,6 +137,16 @@ pub type RawRestoreState = RawRestoreStateInner;
 pub struct RestoreState(RawRestoreState);
 
 impl RestoreState {
+    /// Creates a restore state from its raw representation.
+    pub fn from_raw(raw_restore_state: RawRestoreState) -> Self {
+        Self(raw_restore_state)
+    }
+
+    /// Converts this restore state into its raw representation.
+    pub fn into_raw(self) -> RawRestoreState {
+        self.0
+    }
+
     /// Create an invalid, dummy  `RestoreState`.
     ///
     /// This can be useful to avoid `Option` when storing a `RestoreState` in a
